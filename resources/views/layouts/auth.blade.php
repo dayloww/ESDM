@@ -68,11 +68,15 @@
             justify-content: center;
             margin: 0 auto 1rem;
             backdrop-filter: blur(10px);
+            overflow: hidden;
         }
 
-        .auth-header .logo-icon i {
-            font-size: 2rem;
-            color: #fff;
+        .auth-header .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 0.5rem;
+            display: block;
         }
 
         .auth-header h1 {

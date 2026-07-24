@@ -40,6 +40,7 @@
             background: var(--bg);
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         /* ── SIDEBAR ───────────────────────────── */
@@ -71,17 +72,25 @@
         .sidebar-brand .brand-icon {
             width: 38px;
             height: 38px;
-            background: var(--primary);
+            background: #fff url("{{ asset('storage/logo_esdm.png') }}") center center / contain no-repeat;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-brand .brand-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 0.22rem;
+            display: block;
         }
 
         .sidebar-brand .brand-icon i {
-            color: #fff;
-            font-size: 1.1rem;
+            display: none;
         }
 
         .sidebar-brand .brand-text {
@@ -165,6 +174,7 @@
             display: flex;
             flex-direction: column;
             transition: margin-left 0.3s ease;
+            overflow-x: hidden;
         }
 
         /* ── NAVBAR ────────────────────────────── */
@@ -240,6 +250,7 @@
         #page-content {
             flex: 1;
             padding: 1.5rem;
+            overflow-x: hidden;
         }
 
         .page-header {

@@ -4,21 +4,18 @@
 
 @section('content')
 <div class="auth-card">
-    {{-- Header --}}
     <div class="auth-header">
         <div class="logo-icon">
-            <i class="bi bi-lightning-charge-fill"></i>
+            <img src="{{ asset('storage/logo_esdm.png') }}" alt="Logo ESDM">
         </div>
         <h1>ESDM SATU DATA WILAYAH IV</h1>
-        <p>Cabang Dinas Wilayah IV — Dinas ESDM Provinsi Sulawesi Utara</p>
+        <p>Cabang Dinas Wilayah IV - Dinas ESDM Provinsi Sulawesi Utara</p>
     </div>
 
-    {{-- Body --}}
     <div class="auth-body">
         <h2>Selamat Datang</h2>
         <p class="subtitle">Masuk ke akun Anda untuk melanjutkan</p>
 
-        {{-- Alert Error Session --}}
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
                 <i class="bi bi-exclamation-circle-fill"></i>
@@ -27,7 +24,6 @@
             </div>
         @endif
 
-        {{-- Alert Error Validasi --}}
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible fade show d-flex align-items-start gap-2" role="alert">
                 <i class="bi bi-exclamation-circle-fill mt-1"></i>
@@ -43,7 +39,6 @@
         <form action="{{ route('login.post') }}" method="POST" id="loginForm">
             @csrf
 
-            {{-- Email --}}
             <div class="mb-3">
                 <label for="email" class="form-label">Alamat Email</label>
                 <div class="input-group">
@@ -64,7 +59,6 @@
                 </div>
             </div>
 
-            {{-- Password --}}
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <div class="input-group">
@@ -86,7 +80,6 @@
                 </div>
             </div>
 
-            {{-- Remember Me --}}
             <div class="mb-4 d-flex align-items-center justify-content-between">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="remember" name="remember">
@@ -94,7 +87,6 @@
                 </div>
             </div>
 
-            {{-- Submit --}}
             <button type="submit" class="btn btn-login" id="btnLogin">
                 <span id="btnText">
                     <i class="bi bi-box-arrow-in-right me-1"></i> Masuk
@@ -107,7 +99,6 @@
         </form>
     </div>
 
-    {{-- Footer --}}
     <div class="auth-footer">
         &copy; {{ date('Y') }} Dinas ESDM Provinsi Sulawesi Utara. Semua hak dilindungi.
     </div>
@@ -116,10 +107,9 @@
 
 @push('scripts')
 <script>
-    // Toggle show/hide password
     const togglePassword = document.getElementById('togglePassword');
-    const passwordInput  = document.getElementById('password');
-    const toggleIcon     = document.getElementById('toggleIcon');
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = document.getElementById('toggleIcon');
 
     togglePassword.addEventListener('click', function () {
         const isPassword = passwordInput.type === 'password';
@@ -127,11 +117,10 @@
         toggleIcon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
     });
 
-    // Loading state on form submit
     const loginForm = document.getElementById('loginForm');
-    const btnText   = document.getElementById('btnText');
+    const btnText = document.getElementById('btnText');
     const btnLoading = document.getElementById('btnLoading');
-    const btnLogin  = document.getElementById('btnLogin');
+    const btnLogin = document.getElementById('btnLogin');
 
     loginForm.addEventListener('submit', function () {
         btnText.classList.add('d-none');

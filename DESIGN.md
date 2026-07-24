@@ -78,7 +78,7 @@ Menampilkan:
 
 - Grafik Kabupaten
 
-- Aktivitas Terbaru
+- Aktivitas Terbaru dari data yang baru ditambahkan atau diperbarui
 
 ---
 

@@ -169,6 +169,17 @@
         margin-top: 0.15rem;
     }
 
+    .activity-link {
+        color: inherit;
+        text-decoration: none;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .activity-link:hover {
+        background: #f8f9fa;
+        transform: translateX(2px);
+    }
+
     /* ── WELCOME BANNER ─────────────────────── */
     .welcome-banner {
         background: linear-gradient(135deg, #0D6EFD 0%, #0a3d8f 100%);
@@ -369,11 +380,40 @@
                 Aktivitas Terbaru
             </div>
 
-            {{-- Empty state — akan diisi data nyata setelah modul data selesai --}}
-            <div class="empty-state">
-                <i class="bi bi-inbox"></i>
-                <p>Belum ada aktivitas data yang tercatat.<br>Data akan muncul setelah modul-modul data dikembangkan.</p>
-            </div>
+            @if($recentActivities->isNotEmpty())
+                <div class="list-group list-group-flush">
+                    @foreach($recentActivities as $activity)
+                        <a href="{{ $activity['href'] }}" class="list-group-item list-group-item-action activity-link px-0 py-3 border-0 border-bottom">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                     style="width:42px;height:42px;background:{{ $activity['color'] }}15;color:{{ $activity['color'] }};">
+                                    <i class="bi {{ $activity['icon'] }}"></i>
+                                </div>
+                                <div class="flex-grow-1" style="min-width: 0;">
+                                    <div class="d-flex justify-content-between align-items-start gap-3">
+                                        <div class="min-w-0">
+                                            <div class="fw-semibold text-truncate" style="font-size:0.85rem;">
+                                                {{ $activity['title'] }}
+                                            </div>
+                                            <div class="text-muted text-truncate" style="font-size:0.8rem;">
+                                                {{ $activity['type'] }} · {{ $activity['description'] }}
+                                            </div>
+                                        </div>
+                                        <small class="text-muted text-nowrap">
+                                            {{ optional($activity['occurred_at'])->locale('id')->diffForHumans() }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>Belum ada aktivitas data yang tercatat.<br>Data akan muncul setelah modul-modul data dikembangkan.</p>
+                </div>
+            @endif
         </div>
     </div>
 </div>
