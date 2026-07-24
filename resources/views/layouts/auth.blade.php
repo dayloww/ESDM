@@ -76,9 +76,23 @@
             position: absolute;
             inset: 0;
             background:
-                url("{{ asset('storage/logo_esdm.png') }}") center 72% / 300px no-repeat,
+                linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px),
                 radial-gradient(circle at 50% 108%, rgba(255,255,255,.10), transparent 26%);
-            opacity: .12;
+            background-size: 64px 64px, 64px 64px, auto;
+            opacity: .26;
+            pointer-events: none;
+        }
+
+        .auth-visual::after {
+            content: '';
+            position: absolute;
+            right: -10%;
+            bottom: -16%;
+            width: 360px;
+            height: 360px;
+            background: radial-gradient(circle, rgba(14,165,233,.22), transparent 68%);
+            filter: blur(16px);
             pointer-events: none;
         }
 
@@ -90,6 +104,59 @@
             flex-direction: column;
             justify-content: space-between;
             gap: 1.5rem;
+        }
+
+        .auth-brand,
+        .auth-visual-copy,
+        .auth-points {
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-map-illustration {
+            position: absolute;
+            z-index: 1;
+            inset: 5.4rem 2.5rem 5.2rem 7rem;
+            border-radius: 28px;
+            overflow: hidden;
+            opacity: .22;
+            pointer-events: none;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.02) 54%, rgba(255,255,255,.05)),
+                radial-gradient(circle at 25% 22%, rgba(191,219,254,.10), transparent 32%),
+                radial-gradient(circle at 72% 74%, rgba(14,165,233,.08), transparent 28%);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.07);
+        }
+
+        .auth-map-illustration::before,
+        .auth-map-illustration::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .auth-map-illustration::before {
+            background:
+                linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+            background-size: 48px 48px, 48px 48px;
+            mask-image: linear-gradient(135deg, rgba(0,0,0,.04), rgba(0,0,0,.88) 30%, rgba(0,0,0,.74) 72%, rgba(0,0,0,.03));
+        }
+
+        .auth-map-illustration::after {
+            inset: 22% 18% 20% 22%;
+            border-radius: 20px;
+            background:
+                linear-gradient(135deg, rgba(37,99,235,.14), rgba(255,255,255,.05)),
+                repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 10px, transparent 10px 24px),
+                repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 10px, transparent 10px 24px);
+            border: 1px solid rgba(255,255,255,.10);
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,.04),
+                0 14px 28px rgba(15,23,42,.08);
+            transform: rotate(-6deg);
+            opacity: .42;
         }
 
         .auth-brand {
@@ -388,6 +455,11 @@
                 padding: 2rem;
             }
 
+            .auth-map-illustration {
+                inset: 5.1rem 1.4rem 3.6rem 7.1rem;
+                opacity: .18;
+            }
+
             .auth-panel {
                 padding: 1.35rem;
             }
@@ -439,6 +511,8 @@
                             <p>Provinsi Sulawesi Utara</p>
                         </div>
                     </div>
+
+                    <div class="auth-map-illustration" aria-hidden="true"></div>
 
                     <div class="auth-visual-copy">
                         <h3>Sistem pendataan yang rapi, cepat, dan mudah dipakai.</h3>

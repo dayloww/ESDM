@@ -38,8 +38,8 @@
         --dash-text: #111827;
         --dash-text-muted: #6B7280;
         --dash-radius: 16px;
-        --dash-shadow: 0 8px 24px rgba(0,0,0,.08);
-        --dash-shadow-hover: 0 12px 32px rgba(0,0,0,.12);
+        --dash-shadow: 0 8px 24px rgba(15,23,42,.06);
+        --dash-shadow-hover: 0 14px 34px rgba(15,23,42,.10);
     }
 
     .dashboard-shell {
@@ -47,16 +47,15 @@
     }
 
     .dashboard-header {
-        background: linear-gradient(135deg, rgba(37,99,235,.08), rgba(14,165,233,.05));
-        border: 1px solid var(--dash-border);
-        border-radius: var(--dash-radius);
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1.25rem;
+        background: #fff;
+        border-radius: 20px;
+        padding: 1.35rem 1.5rem;
+        margin-bottom: 1.5rem;
         box-shadow: var(--dash-shadow);
     }
 
     .dashboard-header h1 {
-        font-size: 1.35rem;
+        font-size: 1.5rem;
         font-weight: 700;
         margin: 0;
         color: var(--dash-text);
@@ -65,12 +64,12 @@
     .dashboard-header p {
         margin: .35rem 0 0;
         color: var(--dash-text-muted);
-        font-size: .9rem;
+        font-size: .88rem;
     }
 
     .stat-card {
-        border: 1px solid var(--dash-border);
-        border-radius: var(--dash-radius);
+        border: none;
+        border-radius: 18px;
         background: var(--dash-card);
         box-shadow: var(--dash-shadow);
         transition: transform .18s ease, box-shadow .18s ease;
@@ -84,13 +83,13 @@
     }
 
     .stat-card .card-body {
-        padding: 1.15rem;
+        padding: 1rem;
     }
 
     .stat-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -99,11 +98,11 @@
     }
 
     .stat-icon i {
-        font-size: 1.55rem;
+        font-size: 1.2rem;
     }
 
     .stat-title {
-        font-size: .78rem;
+        font-size: .72rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: .04em;
@@ -111,35 +110,36 @@
     }
 
     .stat-value {
-        font-size: 1.8rem;
+        font-size: 1.55rem;
         font-weight: 700;
         color: var(--dash-text);
         line-height: 1.05;
     }
 
     .stat-desc {
-        font-size: .82rem;
+        font-size: .76rem;
         color: var(--dash-text-muted);
     }
 
     .panel-card {
-        border: 1px solid var(--dash-border);
-        border-radius: var(--dash-radius);
+        border: none;
+        border-radius: 20px;
         background: var(--dash-card);
         box-shadow: var(--dash-shadow);
         height: 100%;
+        overflow: hidden;
     }
 
     .panel-card .card-body {
-        padding: 1.25rem;
+        padding: 1.2rem;
     }
 
     .panel-title {
         display: flex;
         align-items: center;
         gap: .5rem;
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: .98rem;
+        font-weight: 700;
         color: var(--dash-text);
         margin-bottom: 1rem;
     }
@@ -149,47 +149,50 @@
     }
 
     .welcome-card {
-        border: 1px solid var(--dash-border);
-        border-radius: var(--dash-radius);
-        background:
-            radial-gradient(circle at top right, rgba(37,99,235,.10), transparent 40%),
-            linear-gradient(135deg, #ffffff, #f8fbff);
+        border: none;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #ffffff, #f8fbff);
         box-shadow: var(--dash-shadow);
-        height: 100%;
+        overflow: hidden;
     }
 
     .welcome-card .card-body {
-        padding: 1.25rem;
+        padding: 1rem;
     }
 
     .welcome-figure {
-        width: 56px;
-        height: 56px;
-        border-radius: 18px;
-        background: linear-gradient(135deg, var(--dash-primary), var(--dash-secondary));
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        background: rgba(37,99,235,.10);
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        color: #fff;
-        font-size: 1.6rem;
+        color: var(--dash-primary);
+        font-size: 1.2rem;
+        flex-shrink: 0;
     }
 
     .welcome-meta {
         color: var(--dash-text-muted);
-        font-size: .88rem;
+        font-size: .8rem;
     }
 
     .map-preview {
-        min-height: 480px;
-        border-radius: 14px;
+        min-height: 560px;
+        border-radius: 16px;
         overflow: hidden;
-        border: 1px solid var(--dash-border);
+        background: #F8FAFC;
     }
 
     .map-preview #dashboardMap {
         width: 100%;
         height: 100%;
-        min-height: 480px;
+        min-height: 560px;
+    }
+
+    .chart-preview {
+        height: 275px;
     }
 
     .activity-table {
@@ -208,6 +211,7 @@
     .activity-table tbody td {
         vertical-align: middle;
         font-size: .88rem;
+        border-bottom-color: rgba(229,231,235,.72);
     }
 
     .activity-table tbody tr:hover {
@@ -244,11 +248,20 @@
         box-shadow: none !important;
     }
 
+    .leaflet-container {
+        font-family: 'Poppins', sans-serif;
+    }
+
     @media (max-width: 575.98px) {
         .dashboard-header,
         .panel-card .card-body,
         .welcome-card .card-body {
             padding: 1rem;
+        }
+
+        .map-preview,
+        .map-preview #dashboardMap {
+            min-height: 420px;
         }
     }
 </style>
@@ -269,7 +282,7 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-xl-4">
+        <div class="col-sm-6 col-xl">
             <div class="stat-card fade-in">
                 <div class="card-body d-flex align-items-center gap-3">
                     <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-primary), var(--dash-secondary));">
@@ -284,10 +297,10 @@
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-4">
+        <div class="col-sm-6 col-xl">
             <div class="stat-card fade-in">
                 <div class="card-body d-flex align-items-center gap-3">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-success), #15803D);">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-primary), var(--dash-info));">
                         <i class="bi bi-briefcase-fill"></i>
                     </div>
                     <div>
@@ -299,10 +312,10 @@
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-4">
+        <div class="col-sm-6 col-xl">
             <div class="stat-card fade-in">
                 <div class="card-body d-flex align-items-center gap-3">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #7C3AED, #5B21B6);">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #1D4ED8, #2563EB);">
                         <i class="bi bi-gem"></i>
                     </div>
                     <div>
@@ -314,10 +327,10 @@
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-6">
+        <div class="col-sm-6 col-xl">
             <div class="stat-card fade-in">
                 <div class="card-body d-flex align-items-center gap-3">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-warning), #D97706);">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-info), #0284C7);">
                         <i class="bi bi-plug-fill"></i>
                     </div>
                     <div>
@@ -329,10 +342,10 @@
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-6">
+        <div class="col-sm-6 col-xl">
             <div class="stat-card fade-in">
                 <div class="card-body d-flex align-items-center gap-3">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-danger), #B91C1C);">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #64748B, #334155);">
                         <i class="bi bi-shield-check"></i>
                     </div>
                     <div>
@@ -346,50 +359,7 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-lg-7">
-            <div class="panel-card fade-in">
-                <div class="card-body">
-                    <div class="panel-title">
-                        <i class="bi bi-bar-chart-fill"></i>
-                        Grafik Data per Kabupaten
-                    </div>
-                    <div style="height: 320px;">
-                        <canvas id="chartKabupaten"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-5">
-            <div class="welcome-card fade-in mb-3">
-                <div class="card-body">
-                    <div class="d-flex align-items-start gap-3">
-                        <div class="welcome-figure">
-                            <i class="bi bi-person-circle"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="panel-title mb-2">
-                                <i class="bi bi-sun-fill"></i>
-                                Selamat Datang
-                            </div>
-                            <h5 class="mb-1 fw-bold">{{ Auth::user()->name }}</h5>
-                            <div class="welcome-meta mb-3">
-                                {{ Auth::user()->role?->nama_role ?? 'Pengguna' }}<br>
-                                {{ Auth::user()->email }}
-                            </div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill text-bg-primary">Wilayah IV</span>
-                                <span class="badge rounded-pill text-bg-info">Dashboard Admin</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-3 mb-4">
-        <div class="col-12">
+        <div class="col-xl-8">
             <div class="panel-card fade-in">
                 <div class="card-body">
                     <div class="panel-title">
@@ -402,39 +372,39 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row g-3">
-        <div class="col-lg-5">
+        <div class="col-xl-4">
+            <div class="welcome-card fade-in mb-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="welcome-figure">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 fw-bold">{{ Auth::user()->name }}</h6>
+                            <div class="welcome-meta">
+                                {{ Auth::user()->role?->nama_role ?? 'Pengguna' }} - Wilayah IV
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="panel-card fade-in">
                 <div class="card-body">
                     <div class="panel-title">
-                        <i class="bi bi-info-circle-fill"></i>
-                        Informasi Wilayah Kerja
+                        <i class="bi bi-bar-chart-fill"></i>
+                        Grafik Data per Kabupaten
                     </div>
-                    <ul class="list-group list-group-flush">
-                        @php
-                            $workAreas = [
-                                ['name' => 'Kab. Kepulauan Sangihe', 'color' => 'primary', 'note' => 'Pusat data wilayah Sangihe'],
-                                ['name' => 'Kab. Kepulauan Talaud', 'color' => 'success', 'note' => 'Pusat data wilayah Talaud'],
-                                ['name' => 'Kab. Kepulauan Sitaro', 'color' => 'warning', 'note' => 'Pusat data wilayah Sitaro'],
-                            ];
-                        @endphp
-                        @foreach ($workAreas as $area)
-                            <li class="list-group-item px-0 py-3 border-0 border-bottom d-flex align-items-start justify-content-between gap-3">
-                                <div>
-                                    <div class="fw-semibold">{{ $area['name'] }}</div>
-                                    <div class="text-secondary small">{{ $area['note'] }}</div>
-                                </div>
-                                <span class="badge rounded-pill text-bg-{{ $area['color'] }}">Aktif</span>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <div class="chart-preview">
+                        <canvas id="chartKabupaten"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="col-lg-7">
+    <div class="row g-3">
+        <div class="col-12">
             <div class="panel-card fade-in">
                 <div class="card-body">
                     <div class="panel-title">
@@ -516,28 +486,28 @@
                 {
                     label: 'Usaha ESDM',
                     data: dataUsaha,
-                    backgroundColor: 'rgba(37, 99, 235, 0.88)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.82)',
                     borderRadius: 8,
                     borderSkipped: false,
                 },
                 {
                     label: 'Mineral',
                     data: dataMiner,
-                    backgroundColor: 'rgba(124, 58, 237, 0.86)',
+                    backgroundColor: 'rgba(30, 64, 175, 0.72)',
                     borderRadius: 8,
                     borderSkipped: false,
                 },
                 {
                     label: 'Energi',
                     data: dataEner,
-                    backgroundColor: 'rgba(245, 158, 11, 0.88)',
+                    backgroundColor: 'rgba(14, 165, 233, 0.72)',
                     borderRadius: 8,
                     borderSkipped: false,
                 },
                 {
                     label: 'Pengawasan',
                     data: dataPengw,
-                    backgroundColor: 'rgba(14, 165, 233, 0.88)',
+                    backgroundColor: 'rgba(100, 116, 139, 0.58)',
                     borderRadius: 8,
                     borderSkipped: false,
                 },

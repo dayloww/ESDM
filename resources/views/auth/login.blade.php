@@ -5,15 +5,20 @@
 @section('content')
 <div class="auth-card">
     <div class="auth-header">
-        <div class="logo-icon">
-            <img src="{{ asset('storage/logo_esdm.png') }}" alt="Logo ESDM">
+        <div class="brand-logos">
+            <div class="logo-icon logo-provinsi">
+                <img src="{{ asset('storage/logo_provinsi.svg') }}" alt="Logo Provinsi Sulawesi Utara">
+            </div>
+            <div class="logo-icon">
+                <img src="{{ asset('storage/logo_esdm.png') }}" alt="Logo ESDM">
+            </div>
         </div>
         <div class="auth-hint">
             <i class="bi bi-shield-lock-fill"></i>
             Portal Akses Pengguna
         </div>
         <h1>ESDM SATU DATA WILAYAH IV</h1>
-        <p>Sistem Informasi Pendataan, Pemetaan, Pengawasan dan Pelaporan Sektor Energi dan Sumber Daya Mineral</p>
+        <p>Cabang Dinas Wilayah IV (Sangihe, Sitaro, Talaud) Dinas Energi dan Sumber Daya Mineral Daerah Provinsi Sulawesi Utara</p>
     </div>
 
     <div class="auth-body">
@@ -119,6 +124,38 @@
 @endsection
 
 @push('scripts')
+<style>
+    .brand-logos {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        margin-bottom: .7rem;
+    }
+
+    .brand-logos .logo-icon {
+        width: 46px;
+        height: 46px;
+        flex: 0 0 auto;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+    }
+
+    .brand-logos .logo-icon.logo-provinsi {
+        background: transparent;
+    }
+
+    .brand-logos .logo-icon img {
+        padding: 0;
+    }
+
+    @media (max-width: 575.98px) {
+        .brand-logos {
+            justify-content: flex-start;
+        }
+    }
+</style>
 <script>
     const loginForm = document.getElementById('loginForm');
     const passwordInput = document.getElementById('password');
