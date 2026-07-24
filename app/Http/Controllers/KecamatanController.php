@@ -31,7 +31,7 @@ class KecamatanController extends Controller
     }
 
     public function edit(Kecamatan $kecamatan): View
-    {
+   {
         $kabupatens = Kabupaten::all();
         return view('kecamatan.edit', compact('kecamatan', 'kabupatens'));
     }

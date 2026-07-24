@@ -3,436 +3,512 @@
 @section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
 
+@section('breadcrumb')
+    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+@endsection
+
+@php
+    $activityRows = [
+        ['time' => '10 menit lalu', 'module' => 'Data Wilayah', 'action' => 'Menambahkan data desa', 'detail' => 'Desa Taloarane, Kabupaten Kepulauan Sangihe', 'user' => 'Operator Wilayah', 'status' => 'Selesai'],
+        ['time' => '25 menit lalu', 'module' => 'Usaha ESDM', 'action' => 'Memperbarui status izin', 'detail' => 'PT Sangihe Energi Mandiri', 'user' => 'Administrator', 'status' => 'Diproses'],
+        ['time' => '1 jam lalu', 'module' => 'Pengawasan', 'action' => 'Input hasil pemantauan', 'detail' => 'Tambang Pasir Besi, Manganitu', 'user' => 'Tim Pengawas', 'status' => 'Selesai'],
+        ['time' => '2 jam lalu', 'module' => 'Energi', 'action' => 'Menambah data infrastruktur', 'detail' => 'PLTS Komunal, Desa Taloarane', 'user' => 'Operator Energi', 'status' => 'Selesai'],
+        ['time' => 'Kemarin', 'module' => 'Potensi PAD', 'action' => 'Menyusun estimasi penerimaan', 'detail' => 'Sangihe, Triwulan III 2026', 'user' => 'Admin Keuangan', 'status' => 'Draft'],
+    ];
+
+    $dummyMarkers = [
+        ['name' => 'Kabupaten Kepulauan Sangihe', 'lat' => 3.6236, 'lng' => 125.4678, 'info' => 'Jenis data: Data wilayah dan layanan administrasi'],
+        ['name' => 'Kabupaten Kepulauan Talaud', 'lat' => 4.1005, 'lng' => 126.7802, 'info' => 'Jenis data: Pengawasan dan potensi energi'],
+        ['name' => 'Kabupaten Kepulauan Siau Tagulandang Biaro', 'lat' => 2.7428, 'lng' => 125.3952, 'info' => 'Jenis data: Infrastruktur energi dan mineral'],
+    ];
+@endphp
+
 @push('styles')
 <style>
-    /* ── STAT CARDS ──────────────────────────── */
-    .stat-card {
-        border: none;
-        border-radius: 14px;
-        padding: 1.4rem 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 1.1rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-        transition: transform 0.2s, box-shadow 0.2s;
-        overflow: hidden;
-        position: relative;
+    :root {
+        --dash-primary: #2563EB;
+        --dash-secondary: #1E40AF;
+        --dash-success: #16A34A;
+        --dash-warning: #F59E0B;
+        --dash-danger: #DC2626;
+        --dash-info: #0EA5E9;
+        --dash-bg: #F8FAFC;
+        --dash-card: #FFFFFF;
+        --dash-border: #E5E7EB;
+        --dash-text: #111827;
+        --dash-text-muted: #6B7280;
+        --dash-radius: 16px;
+        --dash-shadow: 0 8px 24px rgba(0,0,0,.08);
+        --dash-shadow-hover: 0 12px 32px rgba(0,0,0,.12);
     }
 
-    .stat-card::after {
-        content: '';
-        position: absolute;
-        right: -15px;
-        top: -15px;
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.12);
+    .dashboard-shell {
+        color: var(--dash-text);
+    }
+
+    .dashboard-header {
+        background: linear-gradient(135deg, rgba(37,99,235,.08), rgba(14,165,233,.05));
+        border: 1px solid var(--dash-border);
+        border-radius: var(--dash-radius);
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.25rem;
+        box-shadow: var(--dash-shadow);
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--dash-text);
+    }
+
+    .dashboard-header p {
+        margin: .35rem 0 0;
+        color: var(--dash-text-muted);
+        font-size: .9rem;
+    }
+
+    .stat-card {
+        border: 1px solid var(--dash-border);
+        border-radius: var(--dash-radius);
+        background: var(--dash-card);
+        box-shadow: var(--dash-shadow);
+        transition: transform .18s ease, box-shadow .18s ease;
+        height: 100%;
+        overflow: hidden;
     }
 
     .stat-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        box-shadow: var(--dash-shadow-hover);
     }
 
-    .stat-card .stat-icon {
-        width: 54px;
-        height: 54px;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.2);
-        display: flex;
+    .stat-card .card-body {
+        padding: 1.15rem;
+    }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
+        color: #fff;
         flex-shrink: 0;
     }
 
-    .stat-card .stat-icon i {
-        font-size: 1.6rem;
-        color: #fff;
+    .stat-icon i {
+        font-size: 1.55rem;
     }
 
-    .stat-card .stat-info {
-        flex: 1;
-        min-width: 0;
+    .stat-title {
+        font-size: .78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--dash-text-muted);
     }
 
-    .stat-card .stat-value {
+    .stat-value {
         font-size: 1.8rem;
         font-weight: 700;
-        color: #fff;
-        line-height: 1;
-        margin-bottom: 0.25rem;
+        color: var(--dash-text);
+        line-height: 1.05;
     }
 
-    .stat-card .stat-label {
-        font-size: 0.78rem;
-        color: rgba(255,255,255,0.85);
-        font-weight: 400;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    .stat-desc {
+        font-size: .82rem;
+        color: var(--dash-text-muted);
     }
 
-    .stat-card .stat-footer {
-        font-size: 0.7rem;
-        color: rgba(255,255,255,0.7);
-        margin-top: 0.35rem;
+    .panel-card {
+        border: 1px solid var(--dash-border);
+        border-radius: var(--dash-radius);
+        background: var(--dash-card);
+        box-shadow: var(--dash-shadow);
+        height: 100%;
     }
 
-    /* Warna card */
-    .stat-card.card-blue    { background: linear-gradient(135deg, #0D6EFD, #0a58ca); }
-    .stat-card.card-green   { background: linear-gradient(135deg, #198754, #146c43); }
-    .stat-card.card-purple  { background: linear-gradient(135deg, #6f42c1, #5a359e); }
-    .stat-card.card-orange  { background: linear-gradient(135deg, #fd7e14, #e96c0b); }
-    .stat-card.card-teal    { background: linear-gradient(135deg, #0dcaf0, #0aadcf); }
+    .panel-card .card-body {
+        padding: 1.25rem;
+    }
 
-    /* ── SECTION TITLE ──────────────────────── */
-    .section-title {
-        font-size: 0.95rem;
+    .panel-title {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        font-size: 1rem;
         font-weight: 600;
-        color: #343a40;
+        color: var(--dash-text);
         margin-bottom: 1rem;
-        display: flex;
+    }
+
+    .panel-title i {
+        color: var(--dash-primary);
+    }
+
+    .welcome-card {
+        border: 1px solid var(--dash-border);
+        border-radius: var(--dash-radius);
+        background:
+            radial-gradient(circle at top right, rgba(37,99,235,.10), transparent 40%),
+            linear-gradient(135deg, #ffffff, #f8fbff);
+        box-shadow: var(--dash-shadow);
+        height: 100%;
+    }
+
+    .welcome-card .card-body {
+        padding: 1.25rem;
+    }
+
+    .welcome-figure {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--dash-primary), var(--dash-secondary));
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-    }
-
-    .section-title i {
-        color: #0D6EFD;
-    }
-
-    /* ── CHART CARD ─────────────────────────── */
-    .chart-card {
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-        padding: 1.5rem;
-    }
-
-    /* ── INFO CARD ──────────────────────────── */
-    .info-card {
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-        padding: 1.5rem;
-    }
-
-    /* ── EMPTY STATE ────────────────────────── */
-    .empty-state {
-        text-align: center;
-        padding: 2.5rem 1rem;
-        color: #adb5bd;
-    }
-
-    .empty-state i {
-        font-size: 2.5rem;
-        margin-bottom: 0.75rem;
-        display: block;
-    }
-
-    .empty-state p {
-        font-size: 0.82rem;
-        margin: 0;
-    }
-
-    /* ── ACTIVITY LIST ──────────────────────── */
-    .activity-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.85rem;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    .activity-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    .activity-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-top: 5px;
-        flex-shrink: 0;
-    }
-
-    .activity-text {
-        font-size: 0.82rem;
-        color: #495057;
-        line-height: 1.4;
-    }
-
-    .activity-time {
-        font-size: 0.72rem;
-        color: #adb5bd;
-        margin-top: 0.15rem;
-    }
-
-    .activity-link {
-        color: inherit;
-        text-decoration: none;
-        transition: background-color 0.2s ease, transform 0.2s ease;
-    }
-
-    .activity-link:hover {
-        background: #f8f9fa;
-        transform: translateX(2px);
-    }
-
-    /* ── WELCOME BANNER ─────────────────────── */
-    .welcome-banner {
-        background: linear-gradient(135deg, #0D6EFD 0%, #0a3d8f 100%);
-        border-radius: 14px;
-        padding: 1.5rem 2rem;
+        justify-content: center;
         color: #fff;
-        margin-bottom: 1.5rem;
-        display: flex;
+        font-size: 1.6rem;
+    }
+
+    .welcome-meta {
+        color: var(--dash-text-muted);
+        font-size: .88rem;
+    }
+
+    .map-preview {
+        min-height: 480px;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--dash-border);
+    }
+
+    .map-preview #dashboardMap {
+        width: 100%;
+        height: 100%;
+        min-height: 480px;
+    }
+
+    .activity-table {
+        margin-bottom: 0;
+    }
+
+    .activity-table thead th {
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--dash-text-muted);
+        background: #F8FAFC;
+        border-bottom: 1px solid var(--dash-border);
+    }
+
+    .activity-table tbody td {
+        vertical-align: middle;
+        font-size: .88rem;
+    }
+
+    .activity-table tbody tr:hover {
+        background: #F8FAFC;
+    }
+
+    .module-pill {
+        display: inline-flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
+        gap: .4rem;
+        padding: .35rem .6rem;
+        border-radius: 999px;
+        font-size: .78rem;
+        font-weight: 600;
     }
 
-    .welcome-banner h2 {
-        font-size: 1.15rem;
-        font-weight: 700;
-        margin-bottom: 0.3rem;
+    .module-pill.primary { background: rgba(37,99,235,.10); color: var(--dash-primary); }
+    .module-pill.success { background: rgba(22,163,74,.10); color: var(--dash-success); }
+    .module-pill.warning { background: rgba(245,158,11,.12); color: #B45309; }
+    .module-pill.info { background: rgba(14,165,233,.12); color: var(--dash-info); }
+    .module-pill.danger { background: rgba(220,38,38,.10); color: var(--dash-danger); }
+
+    .fade-in {
+        animation: fadeInUp .35s ease both;
     }
 
-    .welcome-banner p {
-        font-size: 0.82rem;
-        opacity: 0.85;
-        margin: 0;
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    .welcome-banner .banner-icon {
-        font-size: 3rem;
-        opacity: 0.3;
-        flex-shrink: 0;
+    .leaflet-control-attribution,
+    .leaflet-control-zoom {
+        box-shadow: none !important;
     }
 
     @media (max-width: 575.98px) {
-        .welcome-banner .banner-icon { display: none; }
-        .welcome-banner { padding: 1.25rem; }
+        .dashboard-header,
+        .panel-card .card-body,
+        .welcome-card .card-body {
+            padding: 1rem;
+        }
     }
 </style>
 @endpush
 
 @section('content')
-
-{{-- Welcome Banner --}}
-<div class="welcome-banner">
-    <div>
-        <h2>Selamat Datang, {{ Auth::user()->name }}! 👋</h2>
-        <p>
-            <i class="bi bi-calendar3 me-1"></i>
-            {{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y') }}
-            &nbsp;|&nbsp;
-            <i class="bi bi-shield-fill me-1"></i>
-            {{ Auth::user()->role?->nama_role ?? 'Pengguna' }}
-        </p>
-    </div>
-    <i class="bi bi-lightning-charge-fill banner-icon"></i>
-</div>
-
-{{-- ── STAT CARDS ──────────────────────────── --}}
-<div class="row g-3 mb-4">
-    {{-- Data Wilayah --}}
-    <div class="col-sm-6 col-xl-4">
-        <div class="stat-card card-blue">
-            <div class="stat-icon">
-                <i class="bi bi-map-fill"></i>
+<div class="dashboard-shell">
+    <div class="dashboard-header fade-in">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Ringkasan data operasional Wilayah IV Dinas ESDM Sulawesi Utara.</p>
             </div>
-            <div class="stat-info">
-                <div class="stat-value">{{ number_format($stats['wilayah']) }}</div>
-                <div class="stat-label">Data Wilayah</div>
-                <div class="stat-footer">
-                    <i class="bi bi-geo-alt me-1"></i>Sangihe · Talaud · Sitaro
+            <div class="text-md-end welcome-meta">
+                {{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y') }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-4">
+            <div class="stat-card fade-in">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-primary), var(--dash-secondary));">
+                        <i class="bi bi-map-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-title">Data Wilayah</div>
+                        <div class="stat-value">{{ number_format($stats['wilayah']) }}</div>
+                        <div class="stat-desc">Wilayah desa yang terdata</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-4">
+            <div class="stat-card fade-in">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-success), #15803D);">
+                        <i class="bi bi-briefcase-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-title">Usaha ESDM</div>
+                        <div class="stat-value">{{ number_format($stats['usaha']) }}</div>
+                        <div class="stat-desc">Pelaku usaha aktif terdaftar</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-4">
+            <div class="stat-card fade-in">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #7C3AED, #5B21B6);">
+                        <i class="bi bi-gem"></i>
+                    </div>
+                    <div>
+                        <div class="stat-title">Mineral & Pertambangan</div>
+                        <div class="stat-value">{{ number_format($stats['mineral']) }}</div>
+                        <div class="stat-desc">Data komoditas mineral</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-6">
+            <div class="stat-card fade-in">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-warning), #D97706);">
+                        <i class="bi bi-plug-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-title">Energi & Ketenagalistrikan</div>
+                        <div class="stat-value">{{ number_format($stats['energi']) }}</div>
+                        <div class="stat-desc">Infrastruktur energi yang terdata</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-6">
+            <div class="stat-card fade-in">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--dash-danger), #B91C1C);">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <div class="stat-title">Pengawasan</div>
+                        <div class="stat-value">{{ number_format($stats['pengawasan']) }}</div>
+                        <div class="stat-desc">Laporan pemantauan lapangan</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Usaha ESDM --}}
-    <div class="col-sm-6 col-xl-4">
-        <div class="stat-card card-green">
-            <div class="stat-icon">
-                <i class="bi bi-briefcase-fill"></i>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value">{{ number_format($stats['usaha']) }}</div>
-                <div class="stat-label">Data Usaha ESDM</div>
-                <div class="stat-footer">
-                    <i class="bi bi-building me-1"></i>Pelaku usaha terdaftar
+    <div class="row g-3 mb-4">
+        <div class="col-lg-7">
+            <div class="panel-card fade-in">
+                <div class="card-body">
+                    <div class="panel-title">
+                        <i class="bi bi-bar-chart-fill"></i>
+                        Grafik Data per Kabupaten
+                    </div>
+                    <div style="height: 320px;">
+                        <canvas id="chartKabupaten"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Mineral & Pertambangan --}}
-    <div class="col-sm-6 col-xl-4">
-        <div class="stat-card card-purple">
-            <div class="stat-icon">
-                <i class="bi bi-gem"></i>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value">{{ number_format($stats['mineral']) }}</div>
-                <div class="stat-label">Mineral & Pertambangan</div>
-                <div class="stat-footer">
-                    <i class="bi bi-layers me-1"></i>Data komoditas mineral
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Energi & Ketenagalistrikan --}}
-    <div class="col-sm-6 col-xl-6">
-        <div class="stat-card card-orange">
-            <div class="stat-icon">
-                <i class="bi bi-plug-fill"></i>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value">{{ number_format($stats['energi']) }}</div>
-                <div class="stat-label">Energi & Ketenagalistrikan</div>
-                <div class="stat-footer">
-                    <i class="bi bi-lightning me-1"></i>Data infrastruktur energi
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Pengawasan --}}
-    <div class="col-sm-6 col-xl-6">
-        <div class="stat-card card-teal">
-            <div class="stat-icon">
-                <i class="bi bi-shield-check"></i>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value">{{ number_format($stats['pengawasan']) }}</div>
-                <div class="stat-label">Pengawasan</div>
-                <div class="stat-footer">
-                    <i class="bi bi-clipboard-check me-1"></i>Laporan pemantauan lapangan
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- ── CHART + INFO ─────────────────────────── --}}
-<div class="row g-3 mb-4">
-    {{-- Bar Chart --}}
-    <div class="col-lg-8">
-        <div class="chart-card h-100">
-            <div class="section-title">
-                <i class="bi bi-bar-chart-fill"></i>
-                Distribusi Data per Kabupaten
-            </div>
-            <canvas id="chartKabupaten" height="260"></canvas>
-        </div>
-    </div>
-
-    {{-- Info Panel --}}
-    <div class="col-lg-4">
-        <div class="info-card h-100">
-            <div class="section-title">
-                <i class="bi bi-info-circle-fill"></i>
-                Informasi Wilayah Kerja
-            </div>
-
-            <ul class="list-group list-group-flush">
-                @php
-                    $wilayas = [
-                        ['nama' => 'Kab. Kepulauan Sangihe', 'icon' => 'bi-geo-alt-fill', 'color' => 'text-primary'],
-                        ['nama' => 'Kab. Kepulauan Talaud',  'icon' => 'bi-geo-alt-fill', 'color' => 'text-success'],
-                        ['nama' => 'Kab. Kepulauan Sitaro',  'icon' => 'bi-geo-alt-fill', 'color' => 'text-purple'],
-                    ];
-                @endphp
-                @foreach ($wilayas as $w)
-                <li class="list-group-item px-0 py-2 border-0 border-bottom d-flex align-items-center gap-2">
-                    <i class="bi {{ $w['icon'] }} {{ $w['color'] }}" style="color: {{ $loop->index === 2 ? '#6f42c1' : '' }}"></i>
-                    <span style="font-size:0.85rem;">{{ $w['nama'] }}</span>
-                </li>
-                @endforeach
-            </ul>
-
-            <div class="mt-3 p-3 rounded-3" style="background:#f8f9fa;">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <i class="bi bi-clock-history text-primary"></i>
-                    <span style="font-size:0.82rem; font-weight:600;">Sesi Login</span>
-                </div>
-                <div style="font-size:0.8rem; color:#6c757d;">
-                    <div><i class="bi bi-person me-1"></i>{{ Auth::user()->name }}</div>
-                    <div><i class="bi bi-envelope me-1"></i>{{ Auth::user()->email }}</div>
-                    <div><i class="bi bi-shield me-1"></i>{{ Auth::user()->role?->nama_role ?? '-' }}</div>
-                    <div><i class="bi bi-calendar me-1"></i>{{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y, HH:mm') }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- ── AKTIVITAS TERBARU ────────────────────── --}}
-<div class="row g-3">
-    <div class="col-12">
-        <div class="info-card">
-            <div class="section-title">
-                <i class="bi bi-activity"></i>
-                Aktivitas Terbaru
-            </div>
-
-            @if($recentActivities->isNotEmpty())
-                <div class="list-group list-group-flush">
-                    @foreach($recentActivities as $activity)
-                        <a href="{{ $activity['href'] }}" class="list-group-item list-group-item-action activity-link px-0 py-3 border-0 border-bottom">
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                                     style="width:42px;height:42px;background:{{ $activity['color'] }}15;color:{{ $activity['color'] }};">
-                                    <i class="bi {{ $activity['icon'] }}"></i>
-                                </div>
-                                <div class="flex-grow-1" style="min-width: 0;">
-                                    <div class="d-flex justify-content-between align-items-start gap-3">
-                                        <div class="min-w-0">
-                                            <div class="fw-semibold text-truncate" style="font-size:0.85rem;">
-                                                {{ $activity['title'] }}
-                                            </div>
-                                            <div class="text-muted text-truncate" style="font-size:0.8rem;">
-                                                {{ $activity['type'] }} · {{ $activity['description'] }}
-                                            </div>
-                                        </div>
-                                        <small class="text-muted text-nowrap">
-                                            {{ optional($activity['occurred_at'])->locale('id')->diffForHumans() }}
-                                        </small>
-                                    </div>
-                                </div>
+        <div class="col-lg-5">
+            <div class="welcome-card fade-in mb-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="welcome-figure">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="panel-title mb-2">
+                                <i class="bi bi-sun-fill"></i>
+                                Selamat Datang
                             </div>
-                        </a>
-                    @endforeach
+                            <h5 class="mb-1 fw-bold">{{ Auth::user()->name }}</h5>
+                            <div class="welcome-meta mb-3">
+                                {{ Auth::user()->role?->nama_role ?? 'Pengguna' }}<br>
+                                {{ Auth::user()->email }}
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill text-bg-primary">Wilayah IV</span>
+                                <span class="badge rounded-pill text-bg-info">Dashboard Admin</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            @else
-                <div class="empty-state">
-                    <i class="bi bi-inbox"></i>
-                    <p>Belum ada aktivitas data yang tercatat.<br>Data akan muncul setelah modul-modul data dikembangkan.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="panel-card fade-in">
+                <div class="card-body">
+                    <div class="panel-title">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        Preview Peta Digital
+                    </div>
+                    <div class="map-preview">
+                        <div id="dashboardMap"></div>
+                    </div>
                 </div>
-            @endif
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-5">
+            <div class="panel-card fade-in">
+                <div class="card-body">
+                    <div class="panel-title">
+                        <i class="bi bi-info-circle-fill"></i>
+                        Informasi Wilayah Kerja
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        @php
+                            $workAreas = [
+                                ['name' => 'Kab. Kepulauan Sangihe', 'color' => 'primary', 'note' => 'Pusat data wilayah Sangihe'],
+                                ['name' => 'Kab. Kepulauan Talaud', 'color' => 'success', 'note' => 'Pusat data wilayah Talaud'],
+                                ['name' => 'Kab. Kepulauan Sitaro', 'color' => 'warning', 'note' => 'Pusat data wilayah Sitaro'],
+                            ];
+                        @endphp
+                        @foreach ($workAreas as $area)
+                            <li class="list-group-item px-0 py-3 border-0 border-bottom d-flex align-items-start justify-content-between gap-3">
+                                <div>
+                                    <div class="fw-semibold">{{ $area['name'] }}</div>
+                                    <div class="text-secondary small">{{ $area['note'] }}</div>
+                                </div>
+                                <span class="badge rounded-pill text-bg-{{ $area['color'] }}">Aktif</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="panel-card fade-in">
+                <div class="card-body">
+                    <div class="panel-title">
+                        <i class="bi bi-clock-history"></i>
+                        Aktivitas Terbaru
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table activity-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Modul</th>
+                                    <th>Aktivitas</th>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($activityRows as $row)
+                                    @php
+                                        $pillClass = match ($row['module']) {
+                                            'Data Wilayah' => 'primary',
+                                            'Usaha ESDM' => 'success',
+                                            'Pengawasan' => 'danger',
+                                            'Energi' => 'info',
+                                            default => 'warning',
+                                        };
+                                    @endphp
+                                    <tr>
+                                        <td class="text-secondary">{{ $row['time'] }}</td>
+                                        <td>
+                                            <span class="module-pill {{ $pillClass }}">
+                                                {{ $row['module'] }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold">{{ $row['action'] }}</div>
+                                            <div class="text-secondary small">{{ $row['detail'] }}</div>
+                                        </td>
+                                        <td>{{ $row['user'] }}</td>
+                                        <td>
+                                            <span class="badge rounded-pill text-bg-light border">
+                                                {{ $row['status'] }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
 @endsection
 
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+@endpush
+
 @push('scripts')
-{{-- Chart.js --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    const labels    = @json($chartData['labels']);
+    const labels = @json($chartData['labels']);
     const dataUsaha = @json($chartData['usaha']);
     const dataMiner = @json($chartData['mineral']);
-    const dataEner  = @json($chartData['energi']);
+    const dataEner = @json($chartData['energi']);
     const dataPengw = @json($chartData['pengawasan']);
 
-    const ctx = document.getElementById('chartKabupaten').getContext('2d');
+    const chartCtx = document.getElementById('chartKabupaten').getContext('2d');
 
-    new Chart(ctx, {
+    new Chart(chartCtx, {
         type: 'bar',
         data: {
             labels: labels,
@@ -440,29 +516,29 @@
                 {
                     label: 'Usaha ESDM',
                     data: dataUsaha,
-                    backgroundColor: 'rgba(25, 135, 84, 0.8)',
-                    borderRadius: 6,
+                    backgroundColor: 'rgba(37, 99, 235, 0.88)',
+                    borderRadius: 8,
                     borderSkipped: false,
                 },
                 {
                     label: 'Mineral',
                     data: dataMiner,
-                    backgroundColor: 'rgba(111, 66, 193, 0.8)',
-                    borderRadius: 6,
+                    backgroundColor: 'rgba(124, 58, 237, 0.86)',
+                    borderRadius: 8,
                     borderSkipped: false,
                 },
                 {
                     label: 'Energi',
                     data: dataEner,
-                    backgroundColor: 'rgba(253, 126, 20, 0.8)',
-                    borderRadius: 6,
+                    backgroundColor: 'rgba(245, 158, 11, 0.88)',
+                    borderRadius: 8,
                     borderSkipped: false,
                 },
                 {
                     label: 'Pengawasan',
                     data: dataPengw,
-                    backgroundColor: 'rgba(13, 202, 240, 0.8)',
-                    borderRadius: 6,
+                    backgroundColor: 'rgba(14, 165, 233, 0.88)',
+                    borderRadius: 8,
                     borderSkipped: false,
                 },
             ]
@@ -474,10 +550,10 @@
                 legend: {
                     position: 'bottom',
                     labels: {
-                        font: { family: 'Poppins', size: 11 },
-                        padding: 16,
                         usePointStyle: true,
                         pointStyle: 'circle',
+                        font: { family: 'Poppins', size: 11 },
+                        padding: 16,
                     }
                 },
                 tooltip: {
@@ -490,7 +566,6 @@
                     grid: { display: false },
                     ticks: {
                         font: { family: 'Poppins', size: 11 },
-                        maxRotation: 0,
                     }
                 },
                 y: {
@@ -501,11 +576,27 @@
                         precision: 0,
                     },
                     grid: {
-                        color: 'rgba(0,0,0,0.05)',
+                        color: 'rgba(17,24,39,0.06)',
                     }
                 }
             }
         }
+    });
+
+    const map = L.map('dashboardMap', {
+        scrollWheelZoom: false
+    }).setView([3.6236, 125.4678], 10);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const markers = @json($dummyMarkers);
+
+    markers.forEach((marker) => {
+        L.marker([marker.lat, marker.lng]).addTo(map)
+            .bindPopup(`<strong>${marker.name}</strong><br>${marker.info}`);
     });
 </script>
 @endpush

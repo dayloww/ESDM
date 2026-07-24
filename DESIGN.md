@@ -1,101 +1,445 @@
-# DESIGN DOCUMENT
+# Design System
 
-## Konsep
+## Konsep Desain
 
-Aplikasi menggunakan Admin Panel berbasis web.
+Aplikasi menggunakan konsep **Modern Government Dashboard** dengan tampilan bersih, profesional, minimalis, dan mudah digunakan.
 
-Layout:
+Desain harus mengutamakan:
 
-Navbar
+* Modern
+* Clean
+* Professional
+* Responsive
+* Fast
+* User Friendly
+
+Gunakan whitespace yang cukup dan hindari tampilan yang terlalu ramai.
+
+---
+
+# Warna Utama
+
+## Primary
+
+```
+#2563EB
+```
+
+Digunakan untuk:
+
+* Sidebar aktif
+* Tombol utama
+* Link
+* Header
+
+---
+
+## Secondary
+
+```
+#1E40AF
+```
+
+Digunakan untuk:
+
+* Hover
+* Badge
+* Aksen
+
+---
+
+## Success
+
+```
+#16A34A
+```
+
+---
+
+## Warning
+
+```
+#F59E0B
+```
+
+---
+
+## Danger
+
+```
+#DC2626
+```
+
+---
+
+## Info
+
+```
+#0EA5E9
+```
+
+---
+
+## Background
+
+```
+#F8FAFC
+```
+
+---
+
+## Card
+
+```
+#FFFFFF
+```
+
+---
+
+## Border
+
+```
+#E5E7EB
+```
+
+---
+
+## Text Primary
+
+```
+#111827
+```
+
+---
+
+## Text Secondary
+
+```
+#6B7280
+```
+
+---
+
+# Font
+
+Gunakan Google Font:
+
+## Poppins
+
+Font utama aplikasi.
+
+Fallback:
+
+```
+sans-serif
+```
+
+Hierarchy:
+
+Heading
+
+```
+700
+```
+
+Sub Heading
+
+```
+600
+```
+
+Body
+
+```
+400
+```
+
+Small Text
+
+```
+300
+```
+
+---
+
+# Border Radius
+
+Gunakan radius modern.
+
+Card
+
+```
+16px
+```
+
+Button
+
+```
+10px
+```
+
+Input
+
+```
+10px
+```
+
+Modal
+
+```
+18px
+```
+
+---
+
+# Shadow
+
+Gunakan shadow ringan.
+
+```
+0 8px 24px rgba(0,0,0,.08)
+```
+
+Hover
+
+```
+0 12px 32px rgba(0,0,0,.12)
+```
+
+---
+
+# Layout
 
 Sidebar
 
+```
+280px
+```
+
+Navbar
+
+```
+72px
+```
+
 Content
 
-Footer
+```
+Fluid Container
+```
+
+Padding halaman
+
+```
+24px
+```
+
+Gap antar card
+
+```
+20px
+```
 
 ---
 
-## Warna
+# Sidebar
 
-Primary : #0D6EFD
+Background
 
-Success : #198754
+```
+#FFFFFF
+```
 
-Danger : #DC3545
+Menu aktif
 
-Warning : #FFC107
+```
+#2563EB
+```
 
-Background : #F8F9FA
+Menu hover
 
----
+```
+#EFF6FF
+```
 
-## Font
+Icon
 
-Poppins
+Bootstrap Icons
 
----
+Sidebar menggunakan icon di setiap menu.
 
-## Menu Sidebar
-
-Dashboard
-
-Data Wilayah
-
-Data Usaha ESDM
-
-Data Mineral dan Pertambangan
-
-Data Energi dan Ketenagalistrikan
-
-Pengawasan
-
-Potensi PAD
-
-Pengaduan Masyarakat
-
-Laporan
-
-Manajemen Pengguna
-
-Pengaturan
+Sidebar dapat di-collapse.
 
 ---
 
-## Dashboard
+# Navbar
+
+Background putih.
+
+Shadow tipis.
 
 Menampilkan:
 
-- Total Data Wilayah
+* Logo
+* Nama aplikasi
+* Search
+* Notification
+* Profile User
 
-- Total Usaha
-
-- Total Mineral
-
-- Total Energi
-
-- Total Pengawasan
-
-- Grafik Kabupaten
-
-- Aktivitas Terbaru dari data yang baru ditambahkan atau diperbarui
+Navbar selalu sticky.
 
 ---
 
-## Standar UI
+# Card
 
-- Responsive
+Semua statistik menggunakan Card Bootstrap.
 
-- Bootstrap 5
+Isi card:
 
-- DataTables
+* Icon besar
+* Nama statistik
+* Jumlah data
+* Keterangan kecil
 
-- SweetAlert2
+Card memiliki animasi hover ringan.
 
-- Modal Bootstrap
+---
 
-- Breadcrumb
+# Button
 
-- Card Layout
+Gunakan Bootstrap Button.
 
-- Form Validation
+Primary
+
+Rounded
+
+Hover lebih gelap.
+
+Gunakan icon bila diperlukan.
+
+---
+
+# Form
+
+Gunakan Bootstrap Form.
+
+Semua input:
+
+* Rounded
+* Label di atas input
+* Validasi Bootstrap
+* Placeholder jelas
+
+---
+
+# Tabel
+
+Gunakan DataTables.
+
+Fitur:
+
+* Search
+* Pagination
+* Responsive
+* Sorting
+* Export (nantinya)
+
+Hover row aktif.
+
+---
+
+# Icon
+
+Gunakan hanya:
+
+Bootstrap Icons
+
+Jangan mencampur library icon lain.
+
+---
+
+# Grafik
+
+Gunakan:
+
+Chart.js
+
+Jenis grafik:
+
+* Bar
+* Line
+* Doughnut
+
+Gunakan warna yang konsisten dengan tema aplikasi.
+
+---
+
+# Peta
+
+Gunakan:
+
+Leaflet.js
+
+Provider:
+
+OpenStreetMap
+
+Jangan menggunakan Google Maps API.
+
+---
+
+# Animasi
+
+Gunakan animasi ringan.
+
+Contoh:
+
+* Fade In
+* Slide Up
+* Card Hover
+
+Hindari animasi berlebihan.
+
+---
+
+# Responsive
+
+Desktop
+
+≥1200px
+
+Laptop
+
+≥992px
+
+Tablet
+
+≥768px
+
+Mobile
+
+≥576px
+
+Semua halaman wajib responsive.
+
+---
+
+# Dark Mode
+
+Belum diimplementasikan.
+
+Struktur CSS harus memungkinkan penambahan Dark Mode pada versi berikutnya.
+
+---
+
+# Gaya Visual
+
+Inspirasi tampilan:
+
+* AdminLTE 4 (struktur dashboard)
+* Tabler Admin (clean UI)
+* CoreUI (komponen modern)
+* Flowbite Dashboard (minimalis)
+* Dashboard modern bergaya pemerintahan digital
+
+Hindari tampilan yang terlalu ramai, terlalu banyak warna, atau penggunaan efek glassmorphism yang berlebihan. Fokus pada kesan profesional, mudah dibaca, dan nyaman digunakan dalam jangka panjang.

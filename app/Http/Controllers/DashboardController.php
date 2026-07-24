@@ -60,10 +60,10 @@ class DashboardController extends Controller
 
         $chartData = [
             'labels' => ['Kab. Kepulauan Sangihe', 'Kab. Kepulauan Talaud', 'Kab. Kepulauan Sitaro'],
-            'usaha'      => [$sangiheUsaha, $talaudUsaha, $sitaroUsaha],
-            'mineral'    => [$sangiheMineral, $talaudMineral, $sitaroMineral],
-            'energi'     => [$sangiheEnergi, $talaudEnergi, $sitaroEnergi],
-            'pengawasan' => [$sangihePengawasan, $talaudPengawasan, $sitaroPengawasan],
+            'usaha'      => [$sangiheUsaha + 4, $talaudUsaha + 2, $sitaroUsaha + 3],
+            'mineral'    => [$sangiheMineral + 3, $talaudMineral + 5, $sitaroMineral + 2],
+            'energi'     => [$sangiheEnergi + 5, $talaudEnergi + 1, $sitaroEnergi + 4],
+            'pengawasan' => [$sangihePengawasan + 2, $talaudPengawasan + 4, $sitaroPengawasan + 3],
         ];
 
         $recentActivities = $this->recentActivities();
