@@ -8,18 +8,22 @@
         <div class="logo-icon">
             <img src="{{ asset('storage/logo_esdm.png') }}" alt="Logo ESDM">
         </div>
+        <div class="auth-hint">
+            <i class="bi bi-shield-lock-fill"></i>
+            Portal Akses Pengguna
+        </div>
         <h1>ESDM SATU DATA WILAYAH IV</h1>
-        <p>Cabang Dinas Wilayah IV - Dinas ESDM Provinsi Sulawesi Utara</p>
+        <p>Sistem Informasi Pendataan, Pemetaan, Pengawasan dan Pelaporan Sektor Energi dan Sumber Daya Mineral</p>
     </div>
 
     <div class="auth-body">
-        <h2>Selamat Datang</h2>
-        <p class="subtitle">Masuk ke akun Anda untuk melanjutkan</p>
+        <h2>Masuk ke akun Anda</h2>
+        <p class="subtitle">Gunakan email atau username yang terdaftar untuk melanjutkan.</p>
 
         @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
-                <i class="bi bi-exclamation-circle-fill"></i>
-                <span>{{ session('error') }}</span>
+            <div class="alert alert-danger alert-dismissible fade show d-flex align-items-start gap-2" role="alert">
+                <i class="bi bi-exclamation-circle-fill mt-1"></i>
+                <div>{{ session('error') }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
             </div>
         @endif
@@ -36,14 +40,14 @@
             </div>
         @endif
 
-        <form action="{{ route('login.post') }}" method="POST" id="loginForm">
+        <form action="{{ route('login.post') }}" method="POST" id="loginForm" class="needs-validation" novalidate>
             @csrf
 
             <div class="mb-3">
-                <label for="email" class="form-label">Alamat Email</label>
-                <div class="input-group">
+                <label for="email" class="form-label">Username / Email</label>
+                <div class="input-group has-validation">
                     <span class="input-group-text">
-                        <i class="bi bi-envelope"></i>
+                        <i class="bi bi-person"></i>
                     </span>
                     <input
                         type="email"
@@ -51,17 +55,23 @@
                         id="email"
                         name="email"
                         value="{{ old('email') }}"
-                        placeholder="email@esdm.go.id"
+                        placeholder="nama@esdm.go.id"
                         autocomplete="email"
                         autofocus
                         required
                     >
+                    @error('email')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @else
+                        <div class="invalid-feedback">Email wajib diisi.</div>
+                    @enderror
                 </div>
+                <div class="form-floating-note">Masukkan alamat email resmi atau username yang terdaftar.</div>
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <div class="input-group">
+                <div class="input-group has-validation">
                     <span class="input-group-text">
                         <i class="bi bi-lock"></i>
                     </span>
@@ -74,15 +84,17 @@
                         autocomplete="current-password"
                         required
                     >
-                    <button type="button" class="toggle-password" id="togglePassword" title="Tampilkan/sembunyikan password">
+                    <button type="button" class="toggle-password" id="togglePassword" aria-label="Tampilkan password">
                         <i class="bi bi-eye" id="toggleIcon"></i>
                     </button>
+                    <div class="invalid-feedback">Password wajib diisi.</div>
                 </div>
+                <div class="form-floating-note">Pastikan data yang dimasukkan sesuai akun aktif Anda.</div>
             </div>
 
-            <div class="mb-4 d-flex align-items-center justify-content-between">
+            <div class="mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                    <input class="form-check-input" type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
                     <label class="form-check-label" for="remember">Ingat saya</label>
                 </div>
             </div>
@@ -92,7 +104,7 @@
                     <i class="bi bi-box-arrow-in-right me-1"></i> Masuk
                 </span>
                 <span id="btnLoading" class="d-none">
-                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                     Memproses...
                 </span>
             </button>
@@ -100,32 +112,40 @@
     </div>
 
     <div class="auth-footer">
-        &copy; {{ date('Y') }} Dinas ESDM Provinsi Sulawesi Utara. Semua hak dilindungi.
+        <div>Versi 1.0 Beta</div>
+        <div>&copy; 2026 Cabang Dinas Wilayah IV Dinas Energi dan Sumber Daya Mineral Provinsi Sulawesi Utara</div>
     </div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    const toggleIcon = document.getElementById('toggleIcon');
-
-    togglePassword.addEventListener('click', function () {
-        const isPassword = passwordInput.type === 'password';
-        passwordInput.type = isPassword ? 'text' : 'password';
-        toggleIcon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
-    });
-
     const loginForm = document.getElementById('loginForm');
+    const passwordInput = document.getElementById('password');
+    const togglePassword = document.getElementById('togglePassword');
+    const toggleIcon = document.getElementById('toggleIcon');
     const btnText = document.getElementById('btnText');
     const btnLoading = document.getElementById('btnLoading');
     const btnLogin = document.getElementById('btnLogin');
 
-    loginForm.addEventListener('submit', function () {
-        btnText.classList.add('d-none');
-        btnLoading.classList.remove('d-none');
-        btnLogin.disabled = true;
+    togglePassword.addEventListener('click', function () {
+        const isHidden = passwordInput.type === 'password';
+        passwordInput.type = isHidden ? 'text' : 'password';
+        toggleIcon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+        togglePassword.setAttribute('aria-label', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
+    });
+
+    loginForm.addEventListener('submit', function (event) {
+        if (!loginForm.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+            btnLogin.disabled = true;
+        }
+
+        loginForm.classList.add('was-validated');
     });
 </script>
 @endpush

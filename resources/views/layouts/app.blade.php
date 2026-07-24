@@ -424,16 +424,18 @@
         </li>
     </ul>
 
-    {{-- Sistem --}}
-    <div class="sidebar-section-label">Sistem</div>
-    <ul class="sidebar-nav">
-        <li>
-            <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
-                <i class="bi bi-people"></i>
-                <span>Manajemen Pengguna</span>
-            </a>
-        </li>
-    </ul>
+    @if(Auth::user()->isAdmin())
+        {{-- Sistem --}}
+        <div class="sidebar-section-label">Sistem</div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
+                    <i class="bi bi-people"></i>
+                    <span>Manajemen Pengguna</span>
+                </a>
+            </li>
+        </ul>
+    @endif
 </nav>
 
 {{-- ── MAIN WRAPPER ──────────────────────────── --}}

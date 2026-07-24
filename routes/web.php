@@ -21,50 +21,35 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Redirect root ke login
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Auth routes (guest only)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 });
 
-// Logout (auth required)
 Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-// Admin routes (auth required)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Modul 3: Data Wilayah
-    Route::resource('kabupaten', KabupatenController::class);
-    Route::resource('kecamatan', KecamatanController::class);
-    Route::resource('desa', DesaController::class);
-    Route::resource('wilayah', DataWilayahController::class);
+    Route::resource('kabupaten', KabupatenController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('kecamatan', KecamatanController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('desa', DesaController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('wilayah', DataWilayahController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('usaha', UsahaEsdmController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('mineral', MineralController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('energi', EnergiController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('pengawasan', PengawasanController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('pad', PotensiPadController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
-    // Modul 4: Data Usaha ESDM
-    Route::resource('usaha', UsahaEsdmController::class);
-
-    // Modul 5: Data Mineral dan Pertambangan
-    Route::resource('mineral', MineralController::class);
-
-    // Modul 6: Data Energi dan Ketenagalistrikan
-    Route::resource('energi', EnergiController::class);
-
-    // Modul 7: Pengawasan
-    Route::resource('pengawasan', PengawasanController::class);
-
-    // Modul 8: Potensi PAD
-    Route::resource('pad', PotensiPadController::class);
-
-    // Modul 9: Laporan
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
 
-    // Modul 10: Manajemen Pengguna
-    Route::resource('users', UserController::class);
+    Route::middleware('admin')->group(function () {
+        Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    });
 });
