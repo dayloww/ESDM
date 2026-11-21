@@ -2,18 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UsahaEsdm;
 use App\Http\Requests\UsahaEsdmRequest;
+use App\Models\UsahaEsdm;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class UsahaEsdmController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $usahas = UsahaEsdm::all();
-        return view('usaha.index', compact('usahas'));
+        $query = UsahaEsdm::query();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('jenis_usaha')) {
+            $query->where('jenis_usaha', $request->input('jenis_usaha'));
+        }
+
+        $usahas = $query->latest()->get();
+        $statusOptions = [
+            'aktif' => 'Aktif',
+            'nonaktif' => 'Nonaktif',
+            'izin_habis' => 'Izin Habis',
+        ];
+        $jenisUsahaOptions = UsahaEsdm::query()
+            ->whereNotNull('jenis_usaha')
+            ->distinct()
+            ->orderBy('jenis_usaha')
+            ->pluck('jenis_usaha', 'jenis_usaha')
+            ->all();
+
+        return view('usaha.index', compact('usahas', 'statusOptions', 'jenisUsahaOptions'));
     }
 
     public function create(): View

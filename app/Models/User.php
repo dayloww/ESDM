@@ -53,6 +53,26 @@ class User extends Authenticatable
         return $this->role?->nama_role === 'Admin';
     }
 
+    public function isOperator(): bool
+    {
+        return $this->role?->nama_role === 'Operator';
+    }
+
+    public function canManageData(): bool
+    {
+        return $this->isAdmin() || $this->isOperator();
+    }
+
+    public function canDeleteData(): bool
+    {
+        return $this->isAdmin();
+    }
+
+    public function canManageUsers(): bool
+    {
+        return $this->isAdmin();
+    }
+
     /**
      * Cek apakah user berstatus aktif.
      */

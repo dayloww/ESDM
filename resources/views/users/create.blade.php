@@ -17,7 +17,7 @@
             </div>
             <div class="card-body">
                 @if ($errors->any())
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger" role="alert">
                         <ul class="mb-0">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -30,50 +30,50 @@
                     @csrf
                     
                     <div class="mb-3">
-                        <label for="name" class="form-label fw-semibold">Nama Lengkap</label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required placeholder="Contoh: John Doe">
+                        <label for="name" class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required placeholder="Contoh: John Doe"  @error('name') aria-invalid="true" aria-describedby="name-error" @enderror>
                         @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div id="name-error" class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="email" class="form-label fw-semibold">Alamat Email</label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required placeholder="Contoh: johndoe@esdm.go.id">
+                        <label for="email" class="form-label fw-semibold">Alamat Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required placeholder="Contoh: johndoe@esdm.go.id"  @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
                         @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div id="email-error" class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label fw-semibold">Password</label>
-                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required placeholder="Minimal 6 karakter">
+                        <label for="password" class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required placeholder="Minimal 6 karakter"  @error('password') aria-invalid="true" aria-describedby="password-error" @enderror>
                         @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div id="password-error" class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="role_id" class="form-label fw-semibold">Role Pengguna</label>
-                        <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
+                        <label for="role_id" class="form-label fw-semibold">Role Pengguna <span class="text-danger">*</span></label>
+                        <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required  @error('role_id') aria-invalid="true" aria-describedby="role_id-error" @enderror>
                             <option value="">-- Pilih Role --</option>
                             @foreach($roles as $role)
                                 <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>{{ $role->nama_role }}</option>
                             @endforeach
                         </select>
                         @error('role_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div id="role_id-error" class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="status" class="form-label fw-semibold">Status</label>
-                        <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                        <label for="status" class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
+                        <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required  @error('status') aria-invalid="true" aria-describedby="status-error" @enderror>
                             <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                             <option value="nonaktif" {{ old('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
                         </select>
                         @error('status')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div id="status-error" class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 

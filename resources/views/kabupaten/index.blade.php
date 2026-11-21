@@ -8,47 +8,54 @@
 @endsection
 
 @section('content')
+@php
+    $filters = [
+        ['name' => 'nama', 'label' => 'Nama Kabupaten', 'type' => 'text', 'placeholder' => 'Cari nama kabupaten'],
+    ];
+@endphp
 <div class="card">
     <div class="card-header d-flex align-items-center justify-content-between">
         <h5 class="mb-0">Daftar Kabupaten</h5>
-        <a href="{{ route('kabupaten.create') }}" class="btn btn-primary btn-sm">
-            <i class="bi bi-plus-lg"></i> Tambah Kabupaten
-        </a>
+        @include('partials.create-button', ['route' => 'kabupaten.create', 'label' => 'Tambah Kabupaten'])
     </div>
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped" id="kabupatenTable">
-                <thead>
-                    <tr>
-                        <th style="width: 80px;">No</th>
-                        <th>Nama Kabupaten</th>
-                        <th>Jumlah Kecamatan</th>
-                        <th style="width: 200px;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($kabupatens as $index => $kab)
+        @include('partials.filter-bar', ['routeName' => 'kabupaten.index', 'filters' => $filters])
+
+        @if ($kabupatens->isNotEmpty())
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="kabupatenTable">
+                    <thead>
                         <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $kab->nama }}</td>
-                            <td>{{ $kab->kecamatans_count }}</td>
-                            <td>
-                                <a href="{{ route('kabupaten.edit', $kab->id) }}" class="btn btn-warning btn-sm me-1">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                                <form action="{{ route('kabupaten.destroy', $kab->id) }}" method="POST" class="d-inline" id="delete-form-{{ $kab->id }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="deleteConfirm(event, 'delete-form-{{ $kab->id }}')">
-                                        <i class="bi bi-trash"></i> Hapus
-                                    </button>
-                                </form>
-                            </td>
+                            <th>Nama Kabupaten</th>
+                            <th>Jumlah Kecamatan</th>
+                            <th style="width: 170px;">Aksi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach($kabupatens as $kab)
+                            <tr>
+                                <td>{{ $kab->nama }}</td>
+                                <td>{{ $kab->kecamatans_count }}</td>
+                                <td>
+                                    @include('partials.table-actions', [
+                                        'id' => $kab->id,
+                                        'label' => $kab->nama,
+                                        'editRoute' => 'kabupaten.edit',
+                                        'deleteRoute' => 'kabupaten.destroy',
+                                    ])
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            @include('partials.empty-state', [
+                'label' => 'kabupaten',
+                'createRoute' => 'kabupaten.create',
+                'createLabel' => 'Tambah Kabupaten',
+            ])
+        @endif
     </div>
 </div>
 @endsection
@@ -64,6 +71,7 @@
 <script>
     $(document).ready(function() {
         $('#kabupatenTable').DataTable({
+            searching: false,
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
             }

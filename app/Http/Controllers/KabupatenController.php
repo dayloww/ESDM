@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kabupaten;
 use App\Http\Requests\KabupatenRequest;
+use App\Models\Kabupaten;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class KabupatenController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $kabupatens = Kabupaten::withCount('kecamatans')->get();
+        $query = Kabupaten::withCount('kecamatans');
+
+        if ($request->filled('nama')) {
+            $query->where('nama', 'like', '%'.(string) $request->input('nama').'%');
+        }
+
+        $kabupatens = $query->orderBy('nama')->get();
+
         return view('kabupaten.index', compact('kabupatens'));
     }
 

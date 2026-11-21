@@ -2,18 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengawasan;
 use App\Http\Requests\PengawasanRequest;
+use App\Models\Pengawasan;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PengawasanController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $pengawasans = Pengawasan::all();
-        return view('pengawasan.index', compact('pengawasans'));
+        $query = Pengawasan::query();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('tanggal_dari')) {
+            $query->whereDate('tanggal', '>=', $request->input('tanggal_dari'));
+        }
+
+        if ($request->filled('tanggal_sampai')) {
+            $query->whereDate('tanggal', '<=', $request->input('tanggal_sampai'));
+        }
+
+        $pengawasans = $query->latest('tanggal')->get();
+        $statusOptions = [
+            'selesai' => 'Selesai',
+            'dalam_proses' => 'Dalam Proses',
+            'tertunda' => 'Tertunda',
+        ];
+
+        return view('pengawasan.index', compact('pengawasans', 'statusOptions'));
     }
 
     public function create(): View

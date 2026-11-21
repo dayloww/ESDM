@@ -2,16 +2,17 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DataWilayahController;
+use App\Http\Controllers\DesaController;
+use App\Http\Controllers\EnergiController;
 use App\Http\Controllers\KabupatenController;
 use App\Http\Controllers\KecamatanController;
-use App\Http\Controllers\DesaController;
-use App\Http\Controllers\DataWilayahController;
-use App\Http\Controllers\UsahaEsdmController;
+use App\Http\Controllers\KetenagalistrikanController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MineralController;
-use App\Http\Controllers\EnergiController;
 use App\Http\Controllers\PengawasanController;
 use App\Http\Controllers\PotensiPadController;
-use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\UsahaEsdmController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,16 +37,20 @@ Route::post('/logout', [LoginController::class, 'logout'])
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/analisis', [DashboardController::class, 'analisis'])->name('dashboard.analisis');
 
-    Route::resource('kabupaten', KabupatenController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('kecamatan', KecamatanController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('desa', DesaController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('wilayah', DataWilayahController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('usaha', UsahaEsdmController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('mineral', MineralController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('energi', EnergiController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('pengawasan', PengawasanController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('pad', PotensiPadController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::middleware('data.access')->group(function () {
+        Route::resource('kabupaten', KabupatenController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::resource('kecamatan', KecamatanController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::resource('desa', DesaController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::resource('wilayah', DataWilayahController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::resource('usaha', UsahaEsdmController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::resource('mineral', MineralController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::resource('energi', EnergiController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+        Route::resource('ketenagalistrikan', KetenagalistrikanController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+        Route::resource('pengawasan', PengawasanController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::resource('pad', PotensiPadController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    });
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
 

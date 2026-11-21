@@ -16,22 +16,14 @@
                 <h5 class="mb-0">Form Edit Desa</h5>
             </div>
             <div class="card-body">
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                @include('partials.form-errors')
 
                 <form action="{{ route('desa.update', $desa->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
-                        <label for="kecamatan_id" class="form-label fw-semibold">Kecamatan</label>
-                        <select class="form-select @error('kecamatan_id') is-invalid @enderror" id="kecamatan_id" name="kecamatan_id" required>
+                        <label for="kecamatan_id" class="form-label fw-semibold">Kecamatan <span class="text-danger">*</span></label>
+                        <select class="form-select @error('kecamatan_id') is-invalid @enderror" id="kecamatan_id" name="kecamatan_id" required  @error('kecamatan_id') aria-invalid="true" aria-describedby="kecamatan_id-error" @enderror>
                             <option value="">-- Pilih Kecamatan --</option>
                             @foreach($kecamatans as $kec)
                                 <option value="{{ $kec->id }}" {{ old('kecamatan_id', $desa->kecamatan_id) == $kec->id ? 'selected' : '' }}>
@@ -40,22 +32,19 @@
                             @endforeach
                         </select>
                         @error('kecamatan_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div id="kecamatan_id-error" class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="nama" class="form-label fw-semibold">Nama Desa</label>
-                        <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama', $desa->nama) }}" required>
+                        <label for="nama" class="form-label fw-semibold">Nama desa <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama', $desa->nama) }}" required placeholder="Contoh: Desa Taloarane" @error('nama') aria-invalid="true" aria-describedby="nama-error" @enderror>
                         @error('nama')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div id="nama-error" class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="{{ route('desa.index') }}" class="btn btn-secondary">Batal</a>
-                        <button type="submit" class="btn btn-primary">Perbarui</button>
-                    </div>
+                    @include('partials.form-actions', ['cancelRoute' => route('desa.index'), 'submitLabel' => 'Perbarui'])
                 </form>
             </div>
         </div>

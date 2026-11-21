@@ -2,24 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Role;
 use App\Http\Requests\UserRequest;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $users = User::with('role')->get();
-        return view('users.index', compact('users'));
+        $query = User::with('role');
+
+        if ($request->filled('role_id')) {
+            $query->where('role_id', $request->input('role_id'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $users = $query->orderBy('name')->get();
+        $roleOptions = Role::orderBy('nama_role')->pluck('nama_role', 'id')->all();
+        $statusOptions = [
+            'aktif' => 'Aktif',
+            'nonaktif' => 'Nonaktif',
+        ];
+
+        return view('users.index', compact('users', 'roleOptions', 'statusOptions'));
     }
 
     public function create(): View
     {
         $roles = Role::all();
+
         return view('users.create', compact('roles'));
     }
 
@@ -37,13 +55,14 @@ class UserController extends Controller
     public function edit(User $user): View
     {
         $roles = Role::all();
+
         return view('users.edit', compact('user', 'roles'));
     }
 
     public function update(UserRequest $request, User $user): RedirectResponse
     {
         $data = $request->validated();
-        
+
         if (empty($data['password'])) {
             unset($data['password']);
         } else {

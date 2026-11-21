@@ -1,76 +1,89 @@
 @extends('layouts.app')
 
-@section('title', 'Mineral & Pertambangan')
-@section('page-title', 'Mineral & Pertambangan')
+@section('title', 'Data Mineral')
+@section('page-title', 'Data Mineral')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active" aria-current="page">Mineral & Pertambangan</li>
+    <li class="breadcrumb-item active" aria-current="page">Mineral</li>
 @endsection
 
 @section('content')
+@php
+    $filters = [
+        ['name' => 'jenis_komoditas', 'label' => 'Jenis Komoditas', 'options' => $komoditasOptions],
+    ];
+@endphp
 <div class="card">
     <div class="card-header d-flex align-items-center justify-content-between">
-        <h5 class="mb-0">Daftar Komoditas Mineral & Pertambangan</h5>
-        <a href="{{ route('mineral.create') }}" class="btn btn-primary btn-sm">
-            <i class="bi bi-plus-lg"></i> Tambah Data Mineral
-        </a>
+        <h5 class="mb-0">Daftar Data Mineral</h5>
+        @include('partials.create-button', ['route' => 'mineral.create', 'label' => 'Tambah Data Mineral'])
     </div>
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped" id="mineralTable">
-                <thead>
-                    <tr>
-                        <th style="width: 80px;">No</th>
-                        <th>Pemegang Izin</th>
-                        <th>Komoditas</th>
-                        <th>Luas (Ha)</th>
-                        <th>Produksi (Ton/Thn)</th>
-                        <th>Lokasi</th>
-                        <th>Hasil Pemantauan</th>
-                        <th>Dokumentasi</th>
-                        <th style="width: 200px;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($minerals as $index => $m)
+        @include('partials.filter-bar', ['routeName' => 'mineral.index', 'filters' => $filters])
+
+        @if ($minerals->isNotEmpty())
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="mineralTable">
+                    <thead>
                         <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td><strong>{{ $m->pemegang_izin }}</strong></td>
-                            <td>{{ $m->jenis_komoditas }}</td>
-                            <td>{{ $m->luas ? number_format($m->luas) . ' Ha' : '-' }}</td>
-                            <td>{{ $m->produksi ? number_format($m->produksi) . ' Ton' : '-' }}</td>
-                            <td>{{ $m->lokasi }}</td>
-                            <td>
-                                <span class="d-inline-block text-truncate" style="max-width: 150px;" title="{{ $m->hasil_pemantauan }}">
-                                    {{ $m->hasil_pemantauan ?? '-' }}
-                                </span>
-                            </td>
-                            <td>
-                                @if($m->dokumentasi)
-                                    <a href="{{ asset('storage/' . $m->dokumentasi) }}" target="_blank" class="btn btn-outline-info btn-xs py-0 px-2">
-                                        <i class="bi bi-file-earmark-image"></i> Unduh
-                                    </a>
-                                @else
-                                    <span class="text-muted small">-</span>
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('mineral.edit', $m->id) }}" class="btn btn-warning btn-sm me-1">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                                <form action="{{ route('mineral.destroy', $m->id) }}" method="POST" class="d-inline" id="delete-form-{{ $m->id }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="deleteConfirm(event, 'delete-form-{{ $m->id }}')">
-                                        <i class="bi bi-trash"></i> Hapus
-                                    </button>
-                                </form>
-                            </td>
+                            <th>Pemegang Izin</th>
+                            <th>Jenis Komoditas</th>
+                            <th>Lokasi Tambang</th>
+                            <th>Luas (Ha)</th>
+                            <th>Produksi (Ton/Thn)</th>
+                            <th>Dokumentasi</th>
+                            <th>Hasil Pemantauan</th>
+                            <th>Tindak Lanjut</th>
+                            <th style="width: 170px;">Aksi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach($minerals as $m)
+                            <tr>
+                                <td><strong>{{ $m->pemegang_izin }}</strong></td>
+                                <td>{{ $m->jenis_komoditas }}</td>
+                                <td>{{ $m->lokasi }}</td>
+                                <td class="text-end">{{ $m->luas !== null ? number_format($m->luas, 2, ',', '.') : '-' }}</td>
+                                <td class="text-end">{{ $m->produksi !== null ? number_format($m->produksi, 2, ',', '.') : '-' }}</td>
+                                <td>
+                                    @if($m->dokumentasi)
+                                        <a href="{{ asset('storage/' . $m->dokumentasi) }}" target="_blank" class="btn btn-outline-info btn-sm table-file-link" aria-label="Unduh dokumentasi {{ $m->pemegang_izin }}" title="Unduh dokumentasi {{ $m->pemegang_izin }}">
+                                            <i class="bi bi-file-earmark-arrow-down"></i> Unduh
+                                        </a>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="d-inline-block text-truncate" style="max-width: 160px;" title="{{ $m->hasil_pemantauan }}">
+                                        {{ $m->hasil_pemantauan ?? '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="d-inline-block text-truncate" style="max-width: 160px;" title="{{ $m->tindak_lanjut }}">
+                                        {{ $m->tindak_lanjut ?? '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @include('partials.table-actions', [
+                                        'id' => $m->id,
+                                        'label' => $m->pemegang_izin,
+                                        'editRoute' => 'mineral.edit',
+                                        'deleteRoute' => 'mineral.destroy',
+                                    ])
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            @include('partials.empty-state', [
+                'label' => 'data mineral',
+                'createRoute' => 'mineral.create',
+                'createLabel' => 'Tambah Data Mineral',
+            ])
+        @endif
     </div>
 </div>
 @endsection
@@ -86,6 +99,7 @@
 <script>
     $(document).ready(function() {
         $('#mineralTable').DataTable({
+            searching: false,
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
             }

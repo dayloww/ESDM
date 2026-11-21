@@ -2,23 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DataWilayahRequest;
 use App\Models\DataWilayah;
 use App\Models\Desa;
-use App\Http\Requests\DataWilayahRequest;
+use App\Models\Kabupaten;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DataWilayahController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $wilayahs = DataWilayah::with(['desa.kecamatan.kabupaten'])->get();
-        return view('wilayah.index', compact('wilayahs'));
+        $query = DataWilayah::with(['desa.kecamatan.kabupaten']);
+
+        if ($request->filled('status_berlistrik')) {
+            $query->where('status_berlistrik', $request->input('status_berlistrik'));
+        }
+
+        if ($request->filled('kabupaten_id')) {
+            $query->whereHas(
+                'desa.kecamatan.kabupaten',
+                fn ($q) => $q->where('kabupaten.id', $request->input('kabupaten_id'))
+            );
+        }
+
+        $wilayahs = $query->latest()->get();
+        $kabupatenOptions = Kabupaten::orderBy('nama')->pluck('nama', 'id')->all();
+
+        return view('wilayah.index', compact('wilayahs', 'kabupatenOptions'));
     }
 
     public function create(): View
     {
         $desas = Desa::with('kecamatan.kabupaten')->get();
+
         return view('wilayah.create', compact('desas'));
     }
 
@@ -33,6 +51,7 @@ class DataWilayahController extends Controller
     public function edit(DataWilayah $wilayah): View
     {
         $desas = Desa::with('kecamatan.kabupaten')->get();
+
         return view('wilayah.edit', compact('wilayah', 'desas'));
     }
 

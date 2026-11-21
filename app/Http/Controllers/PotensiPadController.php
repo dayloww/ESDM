@@ -2,17 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PotensiPad;
 use App\Http\Requests\PotensiPadRequest;
+use App\Models\PotensiPad;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PotensiPadController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $pads = PotensiPad::all();
-        return view('pad.index', compact('pads'));
+        $query = PotensiPad::query();
+
+        if ($request->filled('jenis_kegiatan')) {
+            $query->where('jenis_kegiatan', $request->input('jenis_kegiatan'));
+        }
+
+        if ($request->filled('periode')) {
+            $query->where('periode', 'like', '%'.(string) $request->input('periode').'%');
+        }
+
+        $pads = $query->latest()->get();
+        $jenisKegiatanOptions = PotensiPad::query()
+            ->whereNotNull('jenis_kegiatan')
+            ->distinct()
+            ->orderBy('jenis_kegiatan')
+            ->pluck('jenis_kegiatan', 'jenis_kegiatan')
+            ->all();
+
+        return view('pad.index', compact('pads', 'jenisKegiatanOptions'));
     }
 
     public function create(): View

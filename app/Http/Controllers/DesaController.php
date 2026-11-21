@@ -2,23 +2,39 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DesaRequest;
 use App\Models\Desa;
 use App\Models\Kecamatan;
-use App\Http\Requests\DesaRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DesaController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $desas = Desa::with(['kecamatan.kabupaten'])->withCount('dataWilayahs')->get();
-        return view('desa.index', compact('desas'));
+        $query = Desa::with(['kecamatan.kabupaten'])->withCount('dataWilayahs');
+
+        if ($request->filled('kecamatan_id')) {
+            $query->where('kecamatan_id', $request->input('kecamatan_id'));
+        }
+
+        $desas = $query->orderBy('nama')->get();
+        $kecamatanOptions = Kecamatan::with('kabupaten')
+            ->orderBy('nama')
+            ->get()
+            ->mapWithKeys(fn (Kecamatan $kecamatan) => [
+                $kecamatan->id => $kecamatan->kabupaten?->nama.' - '.$kecamatan->nama,
+            ])
+            ->all();
+
+        return view('desa.index', compact('desas', 'kecamatanOptions'));
     }
 
     public function create(): View
     {
         $kecamatans = Kecamatan::with('kabupaten')->get();
+
         return view('desa.create', compact('kecamatans'));
     }
 
@@ -33,6 +49,7 @@ class DesaController extends Controller
     public function edit(Desa $desa): View
     {
         $kecamatans = Kecamatan::with('kabupaten')->get();
+
         return view('desa.edit', compact('desa', 'kecamatans'));
     }
 

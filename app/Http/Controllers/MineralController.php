@@ -2,18 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mineral;
 use App\Http\Requests\MineralRequest;
+use App\Models\Mineral;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class MineralController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $minerals = Mineral::all();
-        return view('mineral.index', compact('minerals'));
+        $query = Mineral::query();
+
+        if ($request->filled('jenis_komoditas')) {
+            $query->where('jenis_komoditas', $request->input('jenis_komoditas'));
+        }
+
+        $minerals = $query->latest()->get();
+        $komoditasOptions = Mineral::query()
+            ->whereNotNull('jenis_komoditas')
+            ->distinct()
+            ->orderBy('jenis_komoditas')
+            ->pluck('jenis_komoditas', 'jenis_komoditas')
+            ->all();
+
+        return view('mineral.index', compact('minerals', 'komoditasOptions'));
     }
 
     public function create(): View

@@ -3,72 +3,256 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataWilayah;
-use App\Models\UsahaEsdm;
-use App\Models\Mineral;
 use App\Models\Energi;
+use App\Models\Mineral;
 use App\Models\Pengawasan;
 use App\Models\PotensiPad;
+use App\Models\UsahaEsdm;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     /**
+     * Wilayah kerja beserta kata kunci pencarian lokasinya.
+     */
+    private const REGIONS = [
+        'sangihe' => [
+            'name' => 'Kab. Kepulauan Sangihe',
+            'keywords' => ['Sangihe'],
+        ],
+        'talaud' => [
+            'name' => 'Kab. Kepulauan Talaud',
+            'keywords' => ['Talaud'],
+        ],
+        'sitaro' => [
+            'name' => 'Kab. Kepulauan Sitaro',
+            'keywords' => ['Sitaro', 'Siau', 'Tagulandang', 'Biaro'],
+        ],
+    ];
+
+    /**
      * Tampilkan halaman dashboard.
      */
     public function index(): View
     {
-        $stats = [
-            'wilayah'    => DataWilayah::count(),
-            'usaha'      => UsahaEsdm::count(),
-            'mineral'    => Mineral::count(),
-            'energi'     => Energi::count(),
-            'pengawasan' => Pengawasan::count(),
-        ];
-
-        $sangiheUsaha = UsahaEsdm::where('lokasi', 'like', '%Sangihe%')->count();
-        $sangiheMineral = Mineral::where('lokasi', 'like', '%Sangihe%')->count();
-        $sangiheEnergi = Energi::where('desa', 'like', '%Sangihe%')->count();
-        $sangihePengawasan = Pengawasan::where('lokasi', 'like', '%Sangihe%')->count();
-
-        // Talaud
-        $talaudUsaha = UsahaEsdm::where('lokasi', 'like', '%Talaud%')->count();
-        $talaudMineral = Mineral::where('lokasi', 'like', '%Talaud%')->count();
-        $talaudEnergi = Energi::where('desa', 'like', '%Talaud%')->count();
-        $talaudPengawasan = Pengawasan::where('lokasi', 'like', '%Talaud%')->count();
-
-        // Sitaro
-        $sitaroUsaha = UsahaEsdm::where('lokasi', 'like', '%Sitaro%')
-            ->orWhere('lokasi', 'like', '%Siau%')
-            ->orWhere('lokasi', 'like', '%Tagulandang%')
-            ->orWhere('lokasi', 'like', '%Biaro%')
-            ->count();
-        $sitaroMineral = Mineral::where('lokasi', 'like', '%Sitaro%')
-            ->orWhere('lokasi', 'like', '%Siau%')
-            ->orWhere('lokasi', 'like', '%Tagulandang%')
-            ->orWhere('lokasi', 'like', '%Biaro%')
-            ->count();
-        $sitaroEnergi = Energi::where('desa', 'like', '%Sitaro%')
-            ->orWhere('desa', 'like', '%Siau%')
-            ->orWhere('desa', 'like', '%Tagulandang%')
-            ->orWhere('desa', 'like', '%Biaro%')
-            ->count();
-        $sitaroPengawasan = Pengawasan::where('lokasi', 'like', '%Sitaro%')
-            ->orWhere('lokasi', 'like', '%Siau%')
-            ->orWhere('lokasi', 'like', '%Tagulandang%')
-            ->orWhere('lokasi', 'like', '%Biaro%')
-            ->count();
+        $stats = $this->stats();
+        $regionCounts = $this->regionCounts();
 
         $chartData = [
-            'labels' => ['Kab. Kepulauan Sangihe', 'Kab. Kepulauan Talaud', 'Kab. Kepulauan Sitaro'],
-            'usaha'      => [$sangiheUsaha + 4, $talaudUsaha + 2, $sitaroUsaha + 3],
-            'mineral'    => [$sangiheMineral + 3, $talaudMineral + 5, $sitaroMineral + 2],
-            'energi'     => [$sangiheEnergi + 5, $talaudEnergi + 1, $sitaroEnergi + 4],
-            'pengawasan' => [$sangihePengawasan + 2, $talaudPengawasan + 4, $sitaroPengawasan + 3],
+            'labels' => array_column(self::REGIONS, 'name'),
+            'usaha' => array_column($regionCounts, 'usaha'),
+            'mineral' => array_column($regionCounts, 'mineral'),
+            'energi' => array_column($regionCounts, 'energi'),
+            'pengawasan' => array_column($regionCounts, 'pengawasan'),
         ];
 
         $recentActivities = $this->recentActivities();
+        $monthlyGrowth = $this->monthlyGrowth();
+        $hasRegionalData = $this->hasRegionalData($regionCounts);
 
-        return view('dashboard.index', compact('stats', 'chartData', 'recentActivities'));
+        return view('dashboard.index', compact(
+            'stats',
+            'chartData',
+            'recentActivities',
+            'monthlyGrowth',
+            'hasRegionalData',
+        ));
+    }
+
+    public function analisis(): View
+    {
+        $stats = $this->stats();
+        $regionCounts = $this->regionCounts();
+
+        return view('dashboard.analisis', [
+            'stats' => $stats,
+            'compositionData' => $this->compositionData($stats),
+            'regionalSummary' => $this->regionalSummary($regionCounts),
+            'mapMarkers' => $this->mapMarkers(),
+        ]);
+    }
+
+    private function stats(): array
+    {
+        return [
+            'wilayah' => DataWilayah::count(),
+            'usaha' => UsahaEsdm::count(),
+            'mineral' => Mineral::count(),
+            'energi' => Energi::count(),
+            'pengawasan' => Pengawasan::count(),
+            'pad' => PotensiPad::query()->count(),
+        ];
+    }
+
+    private function compositionData(array $stats): array
+    {
+        return [
+            'labels' => ['Data Wilayah', 'Usaha ESDM', 'Mineral', 'Energi', 'Pengawasan', 'Potensi PAD'],
+            'values' => [$stats['wilayah'], $stats['usaha'], $stats['mineral'], $stats['energi'], $stats['pengawasan'], $stats['pad']],
+            'colors' => ['#2563EB', '#0891B2', '#1E40AF', '#16A34A', '#64748B', '#475569'],
+        ];
+    }
+
+    /**
+     * Jumlah data baru per modul pada bulan berjalan (angka asli database).
+     */
+    private function monthlyGrowth(): array
+    {
+        $startOfMonth = now()->startOfMonth();
+
+        return [
+            'wilayah' => DataWilayah::where('created_at', '>=', $startOfMonth)->count(),
+            'usaha' => UsahaEsdm::where('created_at', '>=', $startOfMonth)->count(),
+            'mineral' => Mineral::where('created_at', '>=', $startOfMonth)->count(),
+            'energi' => Energi::where('created_at', '>=', $startOfMonth)->count(),
+            'pengawasan' => Pengawasan::where('created_at', '>=', $startOfMonth)->count(),
+            'pad' => PotensiPad::query()->where('created_at', '>=', $startOfMonth)->count(),
+        ];
+    }
+
+    private function hasRegionalData(array $regionCounts): bool
+    {
+        return collect($regionCounts)
+            ->flatten()
+            ->contains(fn ($value) => (int) $value > 0);
+    }
+
+    /**
+     * Jumlah data per modul untuk setiap wilayah kerja (angka asli database).
+     */
+    private function regionCounts(): array
+    {
+        $metrics = [
+            'usaha' => [UsahaEsdm::class, 'lokasi'],
+            'mineral' => [Mineral::class, 'lokasi'],
+            'energi' => [Energi::class, 'desa'],
+            'pengawasan' => [Pengawasan::class, 'lokasi'],
+        ];
+
+        $counts = [];
+
+        foreach (self::REGIONS as $key => $region) {
+            foreach ($metrics as $metric => [$model, $column]) {
+                $counts[$key][$metric] = $model::query()
+                    ->where(function ($query) use ($column, $region) {
+                        foreach ($region['keywords'] as $keyword) {
+                            $query->orWhere($column, 'like', "%{$keyword}%");
+                        }
+                    })
+                    ->count();
+            }
+        }
+
+        return $counts;
+    }
+
+    /**
+     * Ringkasan total data per wilayah kerja untuk panel Informasi Wilayah.
+     */
+    private function regionalSummary(array $regionCounts): array
+    {
+        $rows = collect($regionCounts)
+            ->map(function (array $counts, string $key): array {
+                return [
+                    'name' => self::REGIONS[$key]['name'],
+                    'meta' => sprintf(
+                        'Usaha %d · Mineral %d · Energi %d · Pengawasan %d',
+                        $counts['usaha'],
+                        $counts['mineral'],
+                        $counts['energi'],
+                        $counts['pengawasan']
+                    ),
+                    'total' => array_sum($counts),
+                ];
+            })
+            ->values();
+
+        $maxTotal = (int) $rows->max('total');
+
+        return $rows
+            ->map(function (array $row) use ($maxTotal): array {
+                $row['percent'] = $maxTotal > 0 ? (int) round(($row['total'] / $maxTotal) * 100) : 0;
+
+                return $row;
+            })
+            ->all();
+    }
+
+    /**
+     * Marker peta dari koordinat asli tabel data_wilayah dan usaha_esdm.
+     * Koordinat kosong atau tidak valid dilewati — tanpa marker dummy.
+     */
+    private function mapMarkers(): array
+    {
+        $markers = [];
+
+        DataWilayah::with('desa.kecamatan.kabupaten')
+            ->whereNotNull('koordinat')
+            ->latest()
+            ->limit(200)
+            ->get()
+            ->each(function (DataWilayah $item) use (&$markers) {
+                $coordinate = $this->parseCoordinate($item->koordinat);
+                if ($coordinate === null) {
+                    return;
+                }
+
+                $location = collect([
+                    $item->desa?->kecamatan?->nama,
+                    $item->desa?->kecamatan?->kabupaten?->nama,
+                ])->filter()->implode(', ');
+
+                $markers[] = $coordinate + [
+                    'title' => $item->desa?->nama ?? '-',
+                    'description' => $location !== '' ? $location : 'Data Wilayah',
+                    'type' => 'wilayah',
+                ];
+            });
+
+        UsahaEsdm::whereNotNull('koordinat')
+            ->latest()
+            ->limit(200)
+            ->get()
+            ->each(function (UsahaEsdm $item) use (&$markers) {
+                $coordinate = $this->parseCoordinate($item->koordinat);
+                if ($coordinate === null) {
+                    return;
+                }
+
+                $markers[] = $coordinate + [
+                    'title' => $item->nama_pelaku_usaha ?? '-',
+                    'description' => filled($item->lokasi) ? $item->lokasi : 'Usaha ESDM',
+                    'type' => 'usaha',
+                ];
+            });
+
+        return $markers;
+    }
+
+    /**
+     * Parse string koordinat dengan aman menjadi lat/lng float.
+     * Menerima format umum seperti "3.6236, 125.4678", "(3.62;125.46)", "3,6236 125,4678".
+     * Hanya menerima titik di dalam bounding box wilayah kerja Wilayah IV.
+     */
+    private function parseCoordinate(?string $raw): ?array
+    {
+        if (! filled($raw)) {
+            return null;
+        }
+
+        if (! preg_match_all('/-?\d+(?:[.,]\d+)?/', $raw, $matches) || count($matches[0]) < 2) {
+            return null;
+        }
+
+        $lat = (float) str_replace(',', '.', $matches[0][0]);
+        $lng = (float) str_replace(',', '.', $matches[0][1]);
+
+        // Bounding box Wilayah IV (Sangihe–Talaud–Sitaro); di luar ini dianggap tidak valid.
+        if ($lat < 0.0 || $lat > 6.5 || $lng < 122.5 || $lng > 129.5) {
+            return null;
+        }
+
+        return ['lat' => $lat, 'lng' => $lng];
     }
 
     private function recentActivities()
@@ -99,9 +283,9 @@ class DashboardController extends Controller
                 return [
                     'type' => 'Data Wilayah',
                     'title' => $desa,
-                    'description' => $kabupaten . ' · ' . $kecamatan,
+                    'description' => $kabupaten.' · '.$kecamatan,
                     'icon' => 'bi-map-fill',
-                    'color' => '#0d6efd',
+                    'color' => '#2563EB',
                     'href' => route('wilayah.edit', $item->id),
                     'occurred_at' => $item->created_at,
                 ];
@@ -117,9 +301,9 @@ class DashboardController extends Controller
                 return [
                     'type' => 'Usaha ESDM',
                     'title' => $item->nama_pelaku_usaha,
-                    'description' => $item->jenis_usaha . ' · ' . $item->lokasi,
+                    'description' => $item->jenis_usaha.' · '.$item->lokasi,
                     'icon' => 'bi-briefcase-fill',
-                    'color' => '#198754',
+                    'color' => '#0891B2',
                     'href' => route('usaha.edit', $item->id),
                     'occurred_at' => $item->created_at,
                 ];
@@ -137,7 +321,7 @@ class DashboardController extends Controller
                     'title' => $item->jenis_komoditas,
                     'description' => $item->lokasi,
                     'icon' => 'bi-gem',
-                    'color' => '#6f42c1',
+                    'color' => '#1E40AF',
                     'href' => route('mineral.edit', $item->id),
                     'occurred_at' => $item->created_at,
                 ];
@@ -155,7 +339,7 @@ class DashboardController extends Controller
                     'title' => $item->sumber_energi,
                     'description' => $item->desa,
                     'icon' => 'bi-plug-fill',
-                    'color' => '#fd7e14',
+                    'color' => '#16A34A',
                     'href' => route('energi.edit', $item->id),
                     'occurred_at' => $item->created_at,
                 ];
@@ -173,7 +357,7 @@ class DashboardController extends Controller
                     'title' => $item->objek,
                     'description' => $item->lokasi,
                     'icon' => 'bi-shield-check',
-                    'color' => '#0dcaf0',
+                    'color' => '#64748B',
                     'href' => route('pengawasan.edit', $item->id),
                     'occurred_at' => $item->created_at,
                 ];
@@ -191,7 +375,7 @@ class DashboardController extends Controller
                     'title' => $item->jenis_kegiatan,
                     'description' => $item->lokasi,
                     'icon' => 'bi-cash-coin',
-                    'color' => '#dc3545',
+                    'color' => '#F59E0B',
                     'href' => route('pad.edit', $item->id),
                     'occurred_at' => $item->created_at,
                 ];
